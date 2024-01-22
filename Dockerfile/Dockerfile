@@ -1,17 +1,16 @@
 # Builder stage for box86 and box64
 FROM arm64v8/ubuntu:latest as builder
 
-# Adding multiarch support
-RUN dpkg --add-architecture armhf && apt-get update \
-    && apt-get install -y \
-    crossbuild-essential-armhf
-
-# Installing build dependencies
+# Adding multiarch support and installing build dependencies
 # Adding Python3 for box86 compilation
-RUN apt-get update && apt-get install -y \
-    git build-essential cmake python3 \
-    gcc-arm-linux-gnueabihf \
-    libc6:armhf libncurses5:armhf libstdc++6:armhf
+RUN dpkg --add-architecture armhf \
+    && apt-get update \
+    && apt-get install -y \
+        crossbuild-essential-armhf \
+        git build-essential cmake python3 \
+        gcc-arm-linux-gnueabihf \
+        libc6:armhf libncurses5:armhf libstdc++6:armhf \
+        curl
 
 # Cloning and building box86
 RUN git clone https://github.com/ptitSeb/box86 \
@@ -22,24 +21,23 @@ RUN git clone https://github.com/ptitSeb/box86 \
     && make install
 
 # Download and install steamcmd
-RUN mkdir -p /home/steam/steamcmd && \
-    cd /home/steam/steamcmd && \
-    curl -sqL "https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz" | tar zxvf -
+RUN mkdir -p /home/steam/steamcmd \
+    && cd /home/steam/steamcmd \
+    && curl -sqL "https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz" | tar zxvf -
+
 
 # Runner stage
 FROM arm64v8/ubuntu:latest
 
-# Copying the Box86 and Box64 binaries from the builder
+# Copying the Box86 binary and steamcmd from the builder
 COPY --from=builder /usr/local/bin/box86 /usr/local/bin/box86
-
-# Copy steamcmd from the builder stage
 COPY --from=builder /home/steam/steamcmd /home/steam/steamcmd
 
-# Installing necessary runtime packages
-RUN apt-get update && apt-get install -y \
-    curl \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+# Installing necessary runtime packages and setting up the working directory
+RUN apt-get update && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* \
+    && mkdir -p /home/steam/server \
+    && groupadd -r steam && useradd -r -g steam steam
 
 # Setting up the working directory
 WORKDIR /home/steam/server

@@ -21,16 +21,10 @@ persistence:
   enabled: true
 
   savedData:
-    size: "1Gi"
-    accessModes:
-    - ReadWriteOnce
-    storageClassName: ""
+    existingClaim: ""
 
   logData:
-    size: "1Gi"
-    accessModes:
-    - ReadWriteOnce
-    storageClassName: ""
+    existingClaim: ""
 
 env:
   PORT: 27015

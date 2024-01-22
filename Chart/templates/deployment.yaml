@@ -55,9 +55,9 @@ spec:
             - name: UPDATE_ON_BOOT
               value: "{{ .Values.env.UPDATE_ON_BOOT }}"
   volumes:
-  - name: saved-data
-    persistentVolumeClaim:
-      claimName: {{ include "palworld.fullname" . }}-saved
-  - name: log-data
-    persistentVolumeClaim:
-      claimName: {{ include "palworld.fullname" . }}-logs
+    - name: saved-data
+      persistentVolumeClaim:
+        claimName: {{ .Values.persistence.savedData.existingClaim }}
+    - name: log-data
+      persistentVolumeClaim:
+        claimName: {{ .Values.persistence.logData.existingClaim }}

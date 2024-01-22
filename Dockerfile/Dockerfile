@@ -21,11 +21,19 @@ RUN git clone https://github.com/ptitSeb/box86 \
     && make -j$(nproc) \
     && make install
 
+# Download and install steamcmd
+RUN mkdir -p /home/steam/steamcmd && \
+    cd /home/steam/steamcmd && \
+    curl -sqL "https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz" | tar zxvf -
+
 # Runner stage
 FROM arm64v8/ubuntu:latest
 
 # Copying the Box86 and Box64 binaries from the builder
 COPY --from=builder /usr/local/bin/box86 /usr/local/bin/box86
+
+# Copy steamcmd from the builder stage
+COPY --from=builder /home/steam/steamcmd /home/steam/steamcmd
 
 # Installing necessary runtime packages
 RUN apt-get update && apt-get install -y \
@@ -37,14 +45,14 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /home/steam/server
 
 # Copying scripts to the container filesystem
-COPY ./scripts/init.sh /home/steam/server/init.sh
-COPY ./scripts/start.sh /home/steam/server/start.sh
+COPY /scripts/init.sh ./init.sh
+COPY /scripts/start.sh ./start.sh
 
 # Granting execution rights to the scripts
-RUN chmod +x /home/steam/server/init.sh /home/steam/server/start.sh
+RUN chmod +x ./init.sh ./start.sh
 
 # Exposing the port
 EXPOSE ${PORT}
 
 # Setting the entry point
-ENTRYPOINT ["/home/steam/server/init.sh"]
+ENTRYPOINT ["./init.sh"]

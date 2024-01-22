@@ -1,0 +1,47 @@
+replicaCount: 1
+
+image:
+  repository: your-docker-image-repo/palworld
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+service:
+  type: ClusterIP
+  port: 27015
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 2048Mi
+  requests:
+    cpu: 500m
+    memory: 1024Mi
+
+persistence:
+  enabled: true
+
+  savedData:
+    size: "1Gi"
+    accessModes:
+    - ReadWriteOnce
+    storageClassName: ""
+
+  logData:
+    size: "1Gi"
+    accessModes:
+    - ReadWriteOnce
+    storageClassName: ""
+
+env:
+  PORT: 27015
+  PUID: 1000
+  PGID: 1000
+  PLAYERS: 10
+  MULTITHREADING: "false"
+  COMMUNITY: "false"
+  PUBLIC_IP: ""
+  PUBLIC_PORT: ""
+  SERVER_PASSWORD: ""
+  SERVER_NAME: "My Palworld Server"
+  ADMIN_PASSWORD: ""
+  UPDATE_ON_BOOT: "true"

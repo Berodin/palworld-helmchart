@@ -24,4 +24,4 @@ echo "${STARTCOMMAND}"
 printf "\e[0;32m*****STARTING SERVER*****\e[0m\n"
 
 # Execute the start command as 'steam' user
-su steam -c "box86 ${STARTCOMMAND}"
+su steam -c "/usr/local/bin/box86 ${STARTCOMMAND}"

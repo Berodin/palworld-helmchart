@@ -18,7 +18,7 @@ chown -R steam:steam /palworld
 # If UPDATE_ON_BOOT is set, update the server
 if [ "${UPDATE_ON_BOOT}" = true ]; then
     printf "\e[0;32m*****STARTING INSTALL/UPDATE*****\e[0m\n"
-    su steam -c '/usr/games/steamcmd +force_install_dir "/palworld" +login anonymous +app_update 2394010 validate +quit'
+    su steam -c 'box86 /home/steam/steamcmd.sh +force_install_dir "/palworld" +login anonymous +app_update 2394010 validate +quit'
 fi
 
 # Run the start script

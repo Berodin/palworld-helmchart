@@ -1,66 +1,50 @@
-# Stage 1: Builder
-# Use the latest Debian base image for ARM64
-FROM debian:latest as builder
+# Builder stage for box86 and box64
+FROM arm64v8/ubuntu:latest as builder
 
-# Set environment variables to avoid user interaction during package installation
-ENV DEBIAN_FRONTEND=noninteractive
+# Adding multiarch support
+RUN dpkg --add-architecture armhf && apt-get update \
+    && apt-get install -y \
+    crossbuild-essential-armhf
 
-# Install necessary packages and SteamCMD
-# dpkg --add-architecture i386: Adds support for i386 architecture
-# apt-get update && apt-get install: Installs the required packages
-RUN dpkg --add-architecture i386 && \
-    apt-get update && \
-    apt-get install -y wget lib32gcc-s1 steamcmd procps xdg-user-dirs && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+# Installing build dependencies
+# Adding Python3 for box86 compilation
+RUN apt-get update && apt-get install -y \
+    git build-essential cmake python3 \
+    gcc-arm-linux-gnueabihf \
+    libc6:armhf libncurses5:armhf libstdc++6:armhf
 
-# Download and install the game using SteamCMD
-RUN /usr/games/steamcmd +login anonymous +force_install_dir "/palworld" +app_update 2394010 validate +quit
+# Cloning and building box86
+RUN git clone https://github.com/ptitSeb/box86 \
+    && cd box86 \
+    && mkdir build && cd build \
+    && cmake .. -DRPI4ARM64=1 -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+    && make -j$(nproc) \
+    && make install
 
-# Stage 2: Runner
-# Start again from a clean Debian image
-FROM debian:latest
+# Runner stage
+FROM arm64v8/ubuntu:latest
 
-# Repeat the installation of the necessary dependencies without SteamCMD
-RUN dpkg --add-architecture i386 && \
-    apt-get update && \
-    apt-get install -y lib32gcc-s1 procps xdg-user-dirs && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+# Copying the Box86 and Box64 binaries from the builder
+COPY --from=builder /usr/local/bin/box86 /usr/local/bin/box86
 
-# Copy the game from the builder stage
-COPY --from=builder /palworld /palworld
+# Installing necessary runtime packages
+RUN apt-get update && apt-get install -y \
+    curl \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-# Define environment variables for server configuration
-ENV PORT=27015 \
-    PUID=1000 \
-    PGID=1000 \
-    PLAYERS=10 \
-    MULTITHREADING=false \
-    COMMUNITY=false \
-    PUBLIC_IP= \
-    PUBLIC_PORT= \
-    SERVER_PASSWORD= \
-    SERVER_NAME="My Palworld Server" \
-    ADMIN_PASSWORD= \
-    UPDATE_ON_BOOT=true
+# Setting up the working directory
+WORKDIR /home/steam/server
 
-# Copy the startup scripts into the image
-COPY ./scripts/* /home/steam/
+# Copying scripts to the container filesystem
+COPY ./scripts/init.sh /home/steam/server/init.sh
+COPY ./scripts/start.sh /home/steam/server/start.sh
 
-# Set the necessary permissions for the scripts
-RUN chmod +x /home/steam/init.sh /home/steam/start.sh
+# Granting execution rights to the scripts
+RUN chmod +x /home/steam/server/init.sh /home/steam/server/start.sh
 
-# Set the working directory
-WORKDIR /home/steam
-
-# Health check to monitor the server process
-# --start-period=5m: The time to wait before starting health checks
-# CMD pgrep "PalServer-Linux" > /dev/null || exit 1: The actual command to check the process
-HEALTHCHECK --start-period=5m CMD pgrep "PalServer-Linux" > /dev/null || exit 1
-
-# Expose the game server port
+# Exposing the port
 EXPOSE ${PORT}
 
-# Set the entrypoint to the initialization script
-ENTRYPOINT ["/home/steam/init.sh"]
+# Setting the entry point
+ENTRYPOINT ["/home/steam/server/init.sh"]

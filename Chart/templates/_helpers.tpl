@@ -14,4 +14,37 @@
     {{- end -}}
     {{- end -}}
     {{- end -}}
-    
+
+{{/*
+Generate basic labels
+*/}}
+{{- define "palworld.labels" -}}
+helm.sh/chart: {{ include "palworld.chart" . }}
+{{ include "palworld.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end -}}
+
+{{/*
+Selector labels
+*/}}
+{{- define "palworld.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "palworld.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end -}}
+
+{{/*
+Expand the name of the chart.
+*/}}
+{{- define "palworld.name" -}}
+{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Define the chart name and version.
+*/}}
+{{- define "palworld.chart" -}}
+{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
+{{- end -}}

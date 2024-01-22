@@ -30,30 +30,30 @@ spec:
           - name: log-data
             mountPath: /palworld/Logs
         env:
-            - name: PORT
-              value: "{{ .Values.env.PORT }}"
-            - name: PUID
-              value: "{{ .Values.env.PUID }}"
-            - name: PGID
-              value: "{{ .Values.env.PGID }}"
-            - name: PLAYERS
-              value: "{{ .Values.env.PLAYERS }}"
-            - name: MULTITHREADING
-              value: "{{ .Values.env.MULTITHREADING }}"
-            - name: COMMUNITY
-              value: "{{ .Values.env.COMMUNITY }}"
-            - name: PUBLIC_IP
-              value: "{{ .Values.env.PUBLIC_IP }}"
-            - name: PUBLIC_PORT
-              value: "{{ .Values.env.PUBLIC_PORT }}"
-            - name: SERVER_PASSWORD
-              value: "{{ .Values.env.SERVER_PASSWORD }}"
-            - name: SERVER_NAME
-              value: "{{ .Values.env.SERVER_NAME }}"
-            - name: ADMIN_PASSWORD
-              value: "{{ .Values.env.ADMIN_PASSWORD }}"
-            - name: UPDATE_ON_BOOT
-              value: "{{ .Values.env.UPDATE_ON_BOOT }}"
+          - name: PORT
+            value: "{{ .Values.env.PORT }}"
+          - name: PUID
+            value: "{{ .Values.env.PUID }}"
+          - name: PGID
+            value: "{{ .Values.env.PGID }}"
+          - name: PLAYERS
+            value: "{{ .Values.env.PLAYERS }}"
+          - name: MULTITHREADING
+            value: "{{ .Values.env.MULTITHREADING }}"
+          - name: COMMUNITY
+            value: "{{ .Values.env.COMMUNITY }}"
+          - name: PUBLIC_IP
+            value: "{{ .Values.env.PUBLIC_IP }}"
+          - name: PUBLIC_PORT
+            value: "{{ .Values.env.PUBLIC_PORT }}"
+          - name: SERVER_PASSWORD
+            value: "{{ .Values.env.SERVER_PASSWORD }}"
+          - name: SERVER_NAME
+            value: "{{ .Values.env.SERVER_NAME }}"
+          - name: ADMIN_PASSWORD
+            value: "{{ .Values.env.ADMIN_PASSWORD }}"
+          - name: UPDATE_ON_BOOT
+            value: "{{ .Values.env.UPDATE_ON_BOOT }}"
   volumes:
     - name: saved-data
       persistentVolumeClaim:

@@ -1,56 +1,57 @@
-# Builder stage for box86 and box64
-FROM arm64v8/ubuntu:latest as builder
+# Builder Stage
+FROM ubuntu:22.04 as builder
 
-# Adding multiarch support and installing build dependencies
-# Adding Python3 for box86 compilation
-RUN dpkg --add-architecture armhf \
-    && apt-get update \
-    && apt-get install -y \
-        crossbuild-essential-armhf \
-        git build-essential cmake python3 \
-        gcc-arm-linux-gnueabihf \
-        libc6:armhf libncurses5:armhf libstdc++6:armhf \
-        curl
+ENV DEBIAN_FRONTEND=noninteractive
 
-# Cloning and building box86
-RUN git clone https://github.com/ptitSeb/box86 \
-    && cd box86 \
-    && mkdir build && cd build \
-    && cmake .. -DRPI4ARM64=1 -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-    && make -j$(nproc) \
-    && make install
+RUN apt-get update && apt-get install -y \
+    git cmake ninja-build pkg-config ccache clang llvm lld \
+    binfmt-support libsdl2-dev libepoxy-dev libssl-dev python-setuptools \
+    g++-x86-64-linux-gnu nasm python3-clang libstdc++-10-dev-i386-cross \
+    libstdc++-10-dev-amd64-cross libstdc++-10-dev-arm64-cross squashfs-tools \
+    squashfuse libc-bin expect curl sudo fuse wget
 
-# Download and install steamcmd
-RUN mkdir -p /home/steam/steamcmd \
-    && cd /home/steam/steamcmd \
-    && curl -sqL "https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz" | tar zxvf -
+RUN useradd -m -s /bin/bash fex && \
+    usermod -aG sudo fex && \
+    echo "fex ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/fex
 
+USER fex
+WORKDIR /home/fex
+RUN git clone --recurse-submodules https://github.com/FEX-Emu/FEX.git && \
+    cd FEX && \
+    mkdir Build && \
+    cd Build && \
+    CC="ccache clang" CXX="ccache clang++" cmake -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_BUILD_TYPE=Release -DUSE_LINKER=lld -DENABLE_LTO=True -DBUILD_TESTS=False \
+    -DENABLE_ASSERTIONS=False -G Ninja .. && \
+    ninja -j$(nproc)
 
-# Runner stage
-FROM arm64v8/ubuntu:latest
+# Runner Stage
+FROM ubuntu:22.04
 
-# Copying the Box86 binary and steamcmd from the builder
-COPY --from=builder /usr/local/bin/box86 /usr/local/bin/box86
-COPY --from=builder /home/steam/steamcmd /home/steam/steamcmd
+ENV DEBIAN_FRONTEND=noninteractive
 
-# Installing necessary runtime packages and setting up the working directory
-RUN apt-get update && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* \
-    && mkdir -p /home/steam/server \
-    && groupadd -r steam && useradd -r -g steam steam
+RUN apt-get update && apt-get install -y libssl-dev libc-bin curl sudo fuse wget && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Setting up the working directory
-WORKDIR /home/steam/server
+RUN useradd -m -s /bin/bash steam && echo 'root:steamcmd' | chpasswd && \
+    mkdir -p /palworld && chown -R steam:steam /palworld
 
-# Copying scripts to the container filesystem
-COPY /scripts/init.sh ./init.sh
-COPY /scripts/start.sh ./start.sh
-
-# Granting execution rights to the scripts
+COPY --from=builder /home/fex/FEX/Build /home/steam/FEX
+COPY scripts/init.sh ./init.sh
+COPY scripts/start.sh ./start.sh
 RUN chmod +x ./init.sh ./start.sh
 
-# Exposing the port
-EXPOSE ${PORT}
+WORKDIR /home/steam/.fex-emu/RootFS/
+RUN wget -O Ubuntu_22_04.tar.gz https://www.dropbox.com/scl/fi/16mhn3jrwvzapdw50gt20/Ubuntu_22_04.tar.gz?rlkey=4m256iahwtcijkpzcv8abn7nf && \
+    tar xzf Ubuntu_22_04.tar.gz && \
+    rm ./Ubuntu_22_04.tar.gz
 
-# Setting the entry point
-ENTRYPOINT ["./init.sh"]
+WORKDIR /home/steam/.fex-emu
+RUN echo '{"Config":{"RootFS":"Ubuntu_22_04"}}' > ./Config.json
+
+WORKDIR /home/steam/Steam
+RUN curl -sqL "https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz" | tar zxvf -
+
+WORKDIR /home/steam
+
+ENTRYPOINT ["/bin/bash", "./init.sh"]

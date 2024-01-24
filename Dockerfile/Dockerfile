@@ -65,5 +65,5 @@ WORKDIR /home/steam/Steam
 RUN curl -sqL "https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz" | tar zxvf -
 
 WORKDIR /home/steam
-EXPORT 
+EXPOSE ${PORT}
 ENTRYPOINT ["/bin/bash", "./init.sh"]

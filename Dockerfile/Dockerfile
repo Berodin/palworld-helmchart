@@ -46,7 +46,7 @@ ENV ADMIN_PASSWORD='changeit' \
 RUN apt-get update && apt-get install -y libssl-dev libc-bin curl sudo fuse wget && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-RUN useradd -m -s /bin/bash steam && echo 'root:steamcmd' | chpasswd &&
+RUN useradd -m -s /bin/bash steam && echo 'root:steamcmd' | chpasswd
 
 COPY --from=builder /home/fex/FEX/Build /home/steam/FEX
 COPY scripts/init.sh ./init.sh

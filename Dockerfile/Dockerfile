@@ -66,4 +66,5 @@ RUN curl -sqL "https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.t
 
 WORKDIR /home/steam
 EXPOSE ${PORT}
+EXPOSE ${PUBLIC_PORT}
 ENTRYPOINT ["/bin/bash", "./init.sh"]

@@ -19,9 +19,18 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - name: gameport
-              containerPort: {{ .Values.env.PORT | default 27015 }}
+            - name: tcp-queryport
+              containerPort: {{ .Values.env.PORT }}
               protocol: TCP
+            - name: udp-queryport
+              containerPort: {{ .Values.env.PORT }}
+              protocol: UDP
+            - name: tcp-gameport
+              containerPort: {{ .Values.env.PUBLIC_PORT }}
+              protocol: TCP
+            - name: udp-gameport
+              containerPort: {{ .Values.env.PUBLIC_PORT }}
+              protocol: UDP
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:

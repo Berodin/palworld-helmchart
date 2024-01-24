@@ -35,4 +35,4 @@ spec:
       volumes:
         - name: serverdir
           persistentVolumeClaim:
-            claimName: {{ .Values.persistence.savedData.existingClaim }}
+            claimName: {{ .Values.persistence.serverdir.existingClaim }}

@@ -5,10 +5,10 @@ metadata:
   labels:
     {{- include "palworld.labels" . | nindent 4 }}
 spec:
-  type: {{ .Values.service.type }}
+  type: NodePort
   ports:
-    - port: {{ .Values.service.port }}
-      targetPort: gameport
+    - port: 8211
+      targetPort: 8211
       protocol: TCP
       name: gameport
   selector:

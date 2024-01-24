@@ -30,11 +30,23 @@ FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
+ENV ADMIN_PASSWORD='changeit' \
+    COMMUNITY='true' \
+    MULTITHREADING='false' \
+    PGID=1000 \
+    PLAYERS=10 \
+    PORT=27015 \
+    PUBLIC_IP='127.0.0.1' \
+    PUBLIC_PORT='8211' \
+    PUID=1000 \
+    SERVER_NAME='My Palworld Server' \
+    SERVER_PASSWORD='changeit' \
+    UPDATE_ON_BOOT='true'
+
 RUN apt-get update && apt-get install -y libssl-dev libc-bin curl sudo fuse wget && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-RUN useradd -m -s /bin/bash steam && echo 'root:steamcmd' | chpasswd && \
-    mkdir -p /palworld && chown -R steam:steam /palworld
+RUN useradd -m -s /bin/bash steam && echo 'root:steamcmd' | chpasswd &&
 
 COPY --from=builder /home/fex/FEX/Build /home/steam/FEX
 COPY scripts/init.sh ./init.sh
@@ -53,5 +65,5 @@ WORKDIR /home/steam/Steam
 RUN curl -sqL "https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz" | tar zxvf -
 
 WORKDIR /home/steam
-
+EXPORT 
 ENTRYPOINT ["/bin/bash", "./init.sh"]

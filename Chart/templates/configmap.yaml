@@ -1,0 +1,16 @@
+# templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {? {include "palworld.fullname" .: ''} : ''}
+data:
+  PORT: "{{ .Values.env.PORT }}"
+  PUID: "{{ .Values.env.PUID }}"
+  PGID: "{{ .Values.env.PGID }}"
+  PLAYERS: "{{ .Values.env.PLAYERS }}"
+  MULTITHREADING: "{{ .Values.env.MULTITHREADING }}"
+  COMMUNITY: "{{ .Values.env.COMMUNITY }}"
+  PUBLIC_IP: "{{ .Values.env.PUBLIC_IP }}"
+  PUBLIC_PORT: "{{ .Values.env.PUBLIC_PORT }}"
+  SERVER_NAME: "{{ .Values.env.SERVER_NAME }}"
+  UPDATE_ON_BOOT: "{{ .Values.env.UPDATE_ON_BOOT }}"

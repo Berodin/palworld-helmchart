@@ -15,7 +15,7 @@ STARTCOMMAND="FEXBash ./PalServer.sh"
 [ "${MULTITHREADING}" = true ] && STARTCOMMAND="${STARTCOMMAND} -useperfthreads -NoAsyncLoadingThread -UseMultithreadForDS"
 
 # Change to the game directory
-cd /palworld || exit
+cd /palworld 
 
 # Display the start command (for verification)
 echo "${STARTCOMMAND}"

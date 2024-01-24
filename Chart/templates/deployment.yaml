@@ -19,22 +19,8 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-<<<<<<< HEAD
-            - name: queryport
-              containerPort: {{ .Values.env.PORT }}
-              protocol: TCP
             - name: gameport
-              containerPort: {{ .Values.env.PUBLIC_PORT }}
-=======
-            - name: tcp-queryport
-              containerPort: {{ .Values.env.PORT }}
->>>>>>> 2aa418de817c98fd7f029a0cdcd9ed03fe80e748
-              protocol: TCP
-            - name: udp-queryport
-              containerPort: {{ .Values.env.PORT }}
-              protocol: UDP
-            - name: tcp-gameport
-              containerPort: {{ .Values.env.PUBLIC_PORT }}
+              containerPort: {{ .Values.env.PORT | default 27015 }}
               protocol: TCP
             - name: udp-gameport
               containerPort: {{ .Values.env.PUBLIC_PORT }}

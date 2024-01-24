@@ -8,11 +8,11 @@ RUN apt-get update && apt-get install -y \
     binfmt-support libsdl2-dev libepoxy-dev libssl-dev python-setuptools \
     g++-x86-64-linux-gnu nasm python3-clang libstdc++-10-dev-i386-cross \
     libstdc++-10-dev-amd64-cross libstdc++-10-dev-arm64-cross squashfs-tools \
-    squashfuse libc-bin expect curl sudo fuse wget
-
-RUN useradd -m -s /bin/bash fex && \
+    squashfuse libc-bin expect curl sudo fuse wget && \
+    useradd -m -s /bin/bash fex && \
     usermod -aG sudo fex && \
-    echo "fex ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/fex
+    echo "fex ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/fex && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
 USER fex
 WORKDIR /home/fex
@@ -29,6 +29,8 @@ RUN git clone --recurse-submodules https://github.com/FEX-Emu/FEX.git && \
 FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y libssl-dev libc-bin curl sudo fuse ninja-build && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
 ENV ADMIN_PASSWORD='changeit' \
     COMMUNITY='true' \
@@ -43,20 +45,24 @@ ENV ADMIN_PASSWORD='changeit' \
     SERVER_PASSWORD='changeit' \
     UPDATE_ON_BOOT='true'
 
-RUN apt-get update && apt-get install -y libssl-dev libc-bin curl sudo fuse wget && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
-
 RUN useradd -m -s /bin/bash steam && echo 'root:steamcmd' | chpasswd
 
 COPY --from=builder /home/fex/FEX/Build /home/steam/FEX
-COPY scripts/init.sh ./init.sh
-COPY scripts/start.sh ./start.sh
-RUN chmod +x ./init.sh ./start.sh
+COPY scripts/init.sh /home/steam/init.sh
+COPY scripts/start.sh /home/steam/start.sh
 
+RUN chmod +x /home/steam/init.sh /home/steam/start.sh
+
+WORKDIR /home/fex/FEX/Build
+RUN sudo ninja install \
+    && sudo ninja binfmt_misc_32 \
+    && sudo ninja binfmt_misc_64
+
+USER steam
 WORKDIR /home/steam/.fex-emu/RootFS/
-RUN wget -O Ubuntu_22_04.tar.gz https://www.dropbox.com/scl/fi/16mhn3jrwvzapdw50gt20/Ubuntu_22_04.tar.gz?rlkey=4m256iahwtcijkpzcv8abn7nf && \
-    tar xzf Ubuntu_22_04.tar.gz && \
-    rm ./Ubuntu_22_04.tar.gz
+COPY files/Ubuntu_22_04.tar.gz ./Ubuntu_22_04.tar.gz
+RUN tar xzf Ubuntu_22_04.tar.gz \
+    && rm ./Ubuntu_22_04.tar.gz
 
 WORKDIR /home/steam/.fex-emu
 RUN echo '{"Config":{"RootFS":"Ubuntu_22_04"}}' > ./Config.json
@@ -65,6 +71,4 @@ WORKDIR /home/steam/Steam
 RUN curl -sqL "https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz" | tar zxvf -
 
 WORKDIR /home/steam
-EXPOSE ${PORT}
-EXPOSE ${PUBLIC_PORT}
-ENTRYPOINT ["/bin/bash", "./init.sh"]
+ENTRYPOINT ["/bin/bash", "/home/steam/init.sh"]

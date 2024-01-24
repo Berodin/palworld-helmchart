@@ -7,9 +7,31 @@ metadata:
 spec:
   type: NodePort
   ports:
-    - port: 8211
-      targetPort: 8211
+<<<<<<< HEAD
+    - port: {{ .Values.env.port }}
+      targetPort: {{ .Values.env.PORT }}
+      protocol: TCP
+      name: queryport
+    - port: {{ .Values.env.PUBLIC_PORT }}
+      targetPort: {{ .Values.env.PUBLIC_PORT }}
       protocol: TCP
       name: gameport
-  selector:
+=======
+    - port: {{ .Values.env.PORT }}
+      targetPort: {{ .Values.env.PORT }}
+      protocol: TCP
+      name: tcp-queryport
+    - port: {{ .Values.env.PORT }}
+      targetPort: {{ .Values.env.PORT }}
+      protocol: UDP
+      name: udp-queryport
+    - port: {{ .Values.env.PUBLIC_PORT }}
+      targetPort: {{ .Values.env.PUBLIC_PORT }}
+      protocol: TCP
+      name: tcp-gameport
+    - port: {{ .Values.env.PUBLIC_PORT }}
+      targetPort: {{ .Values.env.PUBLIC_PORT }}
+      protocol: UDP
+      name: udp-gameport
+>>>>>>> 2aa418de817c98fd7f029a0cdcd9ed03fe80e748
     {{- include "palworld.selectorLabels" . | nindent 6 }}

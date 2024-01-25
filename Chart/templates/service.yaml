@@ -5,6 +5,8 @@ metadata:
   labels:
     {{- include "palworld.labels" . | nindent 4 }}
 spec:
+  selector:
+    {{- include "palworld.selectorLabels" . | nindent 6 }}
   type: NodePort
   ports:
     - port: {{ .Values.env.PORT }}

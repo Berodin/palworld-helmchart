@@ -36,8 +36,22 @@ spec:
         envFrom:
           - configMapRef:
               name: {{ include "palworld.fullname" . }}
-          - secretRef:
-              name: {{ include "palworld.fullname" . }}
+        env:
+          - name: ADMIN_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "palworld.fullname" . }}
+                key: ADMIN_PASSWORD
+          - name: SERVER_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "palworld.fullname" . }}
+                key: SERVER_PASSWORD
+          - name: PUBLIC_IP
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "palworld.fullname" . }}
+                key: PUBLIC_IP
       volumes:
         - name: serverdir
           persistentVolumeClaim:

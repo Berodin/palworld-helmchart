@@ -19,9 +19,7 @@ persistence:
     existingClaim: ""
 
 env:
-  PORT: 27015
   PUID: 1000
-  PGID: 1000
   PLAYERS: 10
   MULTITHREADING: "false"
   COMMUNITY: "false"

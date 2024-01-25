@@ -2,17 +2,24 @@
 
 # Base start command
 STARTCOMMAND="./PalServer.sh"
+TMP_CONFIG="/tmp/PalWorldSettings.ini"
+CONFIG_DIR="/palworld/Pal/Saved/Config/LinuxServer"
+CONFIG_FILE="${CONFIG_DIR}/PalWorldSettings.ini"
 
 # Add various options based on environment variables
 [ -n "${PLAYERS}" ] && STARTCOMMAND="${STARTCOMMAND} -players=${PLAYERS}"
 [ "${COMMUNITY}" = true ] && STARTCOMMAND="${STARTCOMMAND} EpicApp=PalServer"
 [ "${MULTITHREADING}" = true ] && STARTCOMMAND="${STARTCOMMAND} -useperfthreads -NoAsyncLoadingThread -UseMultithreadForDS"
 
+# copy configfile to pvc
+mkdir -p ${CONFIG_DIR}
+cp ${TMP_CONFIG} ${CONFIG_FILE}
+
 # change values in configfile for passwords and IP
 CONFIG_FILE="/palworld/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini"
-sed -i "s/\${ADMIN_PASSWORD}/$ADMIN_PASSWORD/g" $CONFIG_FILE
-sed -i "s/\${SERVER_PASSWORD}/$SERVER_PASSWORD/g" $CONFIG_FILE
-sed -i "s/\${PUBLIC_IP}/$PUBLIC_IP/g" $CONFIG_FILE
+sed -i "s/ADMIN_PASSWORD/$ADMIN_PASSWORD/g" $CONFIG_FILE
+sed -i "s/SERVER_PASSWORD/$SERVER_PASSWORD/g" $CONFIG_FILE
+sed -i "s/PUBLIC_IP/$PUBLIC_IP/g" $CONFIG_FILE
 
 # Change to the game directory
 cd /palworld 

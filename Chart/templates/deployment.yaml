@@ -31,7 +31,7 @@ spec:
           - name: serverdir
             mountPath: /palworld
           - name: config
-            mountPath: /palworld/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
+            mountPath: /tmp
             subPath: PalWorldSettings.ini
         envFrom:
           - configMapRef:

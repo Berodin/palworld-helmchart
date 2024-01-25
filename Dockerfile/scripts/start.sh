@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Base start command
-STARTCOMMAND="FEXBash ./PalServer.sh"
+STARTCOMMAND="./PalServer.sh"
 
 # Add various options based on environment variables
 [ -n "${PORT}" ] && STARTCOMMAND="${STARTCOMMAND} -port=${PORT}"
@@ -24,4 +24,4 @@ echo "${STARTCOMMAND}"
 printf "\e[0;32m*****STARTING SERVER*****\e[0m\n"
 
 # Execute the start command as 'steam' user
-${STARTCOMMAND}
+FEXBash "${STARTCOMMAND}"

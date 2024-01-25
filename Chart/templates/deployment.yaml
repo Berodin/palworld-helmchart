@@ -15,36 +15,42 @@ spec:
         {{- include "palworld.selectorLabels" . | nindent 8 }}
     spec:
       containers:
-        - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          ports:
-            - name: tcp-gameport
-              containerPort: {{ .Values.palWorldSettings.PublicPort }}
-              protocol: TCP
-            - name: udp-gameport
-              containerPort: {{ .Values.palWorldSettings.PublicPort }}
-              protocol: UDP
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
-          volumeMounts:
-            - name: serverdir
-              mountPath: /palworld
-            - name: config
-              mountPath: /palworld/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
-              subPath: PalWorldSettings.ini
-          envFrom:
-            - configMapRef:
-                name: {{ include "palworld.fullname" . }}
-            - secretRef:
-                name: {{ include "palworld.fullname" . }}
-        volumes:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+          - name: tcp-queryport
+            containerPort: {{ .Values.env.PORT }}
+            protocol: TCP
+          - name: udp-queryport
+            containerPort: {{ .Values.env.PORT }}
+            protocol: UDP
+          - name: tcp-gameport
+            containerPort: {{ .Values.env.PUBLIC_PORT }}
+            protocol: TCP
+          - name: udp-gameport
+            containerPort: {{ .Values.env.PUBLIC_PORT }}
+            protocol: UDP
+        resources:
+          {{- toYaml .Values.resources | nindent 12 }}
+        volumeMounts:
           - name: serverdir
-            persistentVolumeClaim:
-              claimName: {{ .Values.persistence.serverdir.existingClaim }}
+            mountPath: /palworld
           - name: config
-            configMap:
+            mountPath: /palworld/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
+            subPath: PalWorldSettings.ini
+        envFrom:
+          - configMapRef:
               name: {{ include "palworld.fullname" . }}
-              items:
-                - key: PalWorldSettings.ini
-                  path: PalWorldSettings.ini
+          - secretRef:
+              name: {{ include "palworld.fullname" . }}
+      volumes:
+        - name: serverdir
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.serverdir.existingClaim }}
+        - name: config
+          configMap:
+            name: {{ include "palworld.fullname" . }}
+            items:
+              - key: PalWorldSettings.ini
+                path: PalWorldSettings.ini

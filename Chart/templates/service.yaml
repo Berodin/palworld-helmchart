@@ -9,20 +9,12 @@ spec:
     {{- include "palworld.selectorLabels" . | nindent 6 }}
   type: NodePort
   ports:
-    - port: {{ .Values.env.PORT }}
-      targetPort: {{ .Values.env.PORT }}
-      protocol: TCP
-      name: tcp-queryport
-    - port: {{ .Values.env.PORT }}
-      targetPort: {{ .Values.env.PORT }}
-      protocol: UDP
-      name: udp-queryport
-    - port: {{ .Values.env.PUBLIC_PORT }}
-      targetPort: {{ .Values.env.PUBLIC_PORT }}
+    - port: {{ .Values.palWorldSettings.PublicPort }}
+      targetPort: {{ .Values.palWorldSettings.PublicPort }}
       protocol: TCP
       name: tcp-gameport
-    - port: {{ .Values.env.PUBLIC_PORT }}
-      targetPort: {{ .Values.env.PUBLIC_PORT }}
+    - port: {{ .Values.palWorldSettings.PublicPort }}
+      targetPort: {{ .Values.palWorldSettings.PublicPort }}
       protocol: UDP
       name: udp-gameport
     {{- include "palworld.selectorLabels" . | nindent 6 }}

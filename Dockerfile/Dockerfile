@@ -34,8 +34,6 @@ RUN apt-get update && apt-get install -y \
     fuse \
     wget
 
-
-
 # Fügen Sie Benutzer hinzu und konfigurieren Sie sie
 RUN useradd -m -s /bin/bash fex \
     && usermod -aG sudo fex \
@@ -56,10 +54,10 @@ RUN chmod +x /home/steam/init.sh /home/steam/start.sh
 
 # Klonen und bauen Sie FEX
 USER fex
-WORKDIR /home/fex
-RUN git clone --recurse-submodules https://github.com/FEX-Emu/FEX.git \
-    && cd FEX \
-    && mkdir Build \
+WORKDIR /home/fex/FEX
+COPY files/FEX /home/fex/FEX
+
+RUN mkdir Build \
     && cd Build \
     && CC="ccache clang" CXX="ccache clang++" cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release -DUSE_LINKER=lld -DENABLE_LTO=True -DBUILD_TESTS=False -DENABLE_ASSERTIONS=False -G Ninja .. \
     && ninja -j$(nproc)
@@ -73,7 +71,7 @@ RUN sudo ninja install \
 # Vorbereiten des Steam- und FEX-Emu-Verzeichnisses
 USER steam
 WORKDIR /home/steam/.fex-emu/RootFS/
-COPY Ubuntu_22_04.tar.gz /home/steam/.fex-emu/RootFS/Ubuntu_22_04.tar.gz
+COPY files/Ubuntu_22_04.tar.gz /home/steam/.fex-emu/RootFS/Ubuntu_22_04.tar.gz
 RUN tar xzf /home/steam/.fex-emu/RootFS/Ubuntu_22_04.tar.gz -C /home/steam/.fex-emu/RootFS/ \
     && rm /home/steam/.fex-emu/RootFS/Ubuntu_22_04.tar.gz
 

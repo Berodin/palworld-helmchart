@@ -9,6 +9,14 @@ spec:
     {{- include "palworld.selectorLabels" . | nindent 6 }}
   type: NodePort
   ports:
+    - port: {{ .Values.env.PORT }}
+      targetPort: {{ .Values.env.PORT }}
+      protocol: TCP
+      name: tcp-queryport
+    - port: {{ .Values.env.PORT }}
+      targetPort: {{ .Values.env.PORT }}
+      protocol: UDP
+      name: udp-queryport
     - port: {{ .Values.palWorldSettings.PublicPort }}
       targetPort: {{ .Values.palWorldSettings.PublicPort }}
       protocol: TCP

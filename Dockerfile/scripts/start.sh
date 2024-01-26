@@ -25,6 +25,9 @@ sed -i "s/ADMIN_PASSWORD/$ADMIN_PASSWORD/g" $CONFIG_FILE
 sed -i "s/SERVER_PASSWORD/$SERVER_PASSWORD/g" $CONFIG_FILE
 sed -i "s/PUBLIC_IP/$PUBLIC_IP/g" $CONFIG_FILE
 
+echo "set config to readonly"
+chmod 444 ${CONFIG_FILE}
+
 # Change to the game directory
 cd /palworld 
 

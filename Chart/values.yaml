@@ -21,6 +21,7 @@ env:
   MULTITHREADING: "false"
   COMMUNITY: "false"
   UPDATE_ON_BOOT: "true"
+  PORT: 27015
 
 palWorldSettings:
   Difficulty: None

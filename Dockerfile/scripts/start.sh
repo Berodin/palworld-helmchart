@@ -12,8 +12,12 @@ CONFIG_FILE="${CONFIG_DIR}/PalWorldSettings.ini"
 [ "${MULTITHREADING}" = true ] && STARTCOMMAND="${STARTCOMMAND} -useperfthreads -NoAsyncLoadingThread -UseMultithreadForDS"
 
 # copy configfile to pvc
+echo "create ConfigPath: ${CONFIG_DIR}"
 mkdir -p ${CONFIG_DIR}
+echo "copy${TMP_CONFIG} to ${CONFIG_FILE}"
 cp ${TMP_CONFIG} ${CONFIG_FILE}
+
+echo "take ownership of ${CONFIG_FILE}"
 chown steam:steam ${CONFIG_FILE}
 
 # change values in configfile for passwords and IP

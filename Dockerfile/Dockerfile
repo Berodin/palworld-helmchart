@@ -54,10 +54,10 @@ RUN chmod +x /home/steam/init.sh /home/steam/start.sh
 
 # Klonen und bauen Sie FEX
 USER fex
-WORKDIR /home/fex/FEX
-COPY files/FEX /home/fex/FEX
-
-RUN mkdir Build \
+WORKDIR /home/fex
+RUN git clone --recurse-submodules https://github.com/FEX-Emu/FEX.git \
+    && cd FEX \
+    && mkdir Build \
     && cd Build \
     && CC="ccache clang" CXX="ccache clang++" cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release -DUSE_LINKER=lld -DENABLE_LTO=True -DBUILD_TESTS=False -DENABLE_ASSERTIONS=False -G Ninja .. \
     && ninja -j$(nproc)

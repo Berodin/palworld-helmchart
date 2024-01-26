@@ -26,10 +26,10 @@ spec:
             containerPort: {{ .Values.env.PORT }}
             protocol: UDP
           - name: tcp-gameport
-            containerPort: {{ .Values.env.PUBLIC_PORT }}
+            containerPort: {{ .Values.palWorldSettings.PublicPort }}
             protocol: TCP
           - name: udp-gameport
-            containerPort: {{ .Values.env.PUBLIC_PORT }}
+            containerPort: {{ .Values.palWorldSettings.PublicPort }}
             protocol: UDP
         resources:
           {{- toYaml .Values.resources | nindent 12 }}

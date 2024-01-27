@@ -34,6 +34,9 @@ env:
   UPDATE_ON_BOOT: "true"
   PORT: 27015
 
+gameUserSettings:
+  DedicatedServerName: "yourServername"
+
 palWorldSettings:
   Difficulty: None
   DayTimeSpeedRate: 1.000000

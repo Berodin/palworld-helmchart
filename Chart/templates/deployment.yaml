@@ -43,6 +43,9 @@ spec:
           - name: config
             mountPath: /tmp/PalWorldSettings.ini
             subPath: PalWorldSettings.ini
+          - name: config
+            mountPath: /tmp/GameUserSettings.ini
+            subPath: GameUserSettings.ini
         envFrom:
           - configMapRef:
               name: {{ include "palworld.fullname" . }}
@@ -74,3 +77,5 @@ spec:
             items:
               - key: PalWorldSettings.ini
                 path: PalWorldSettings.ini
+              - key: GameUserSettings.ini
+                path: GameUserSettings.ini

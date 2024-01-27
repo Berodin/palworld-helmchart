@@ -3,8 +3,10 @@
 # Base start command
 STARTCOMMAND="./PalServer.sh"
 TMP_CONFIG="/tmp/PalWorldSettings.ini"
+GAME_USER_CONFIG_TMP="/tmp/GameUserSettings.ini"
 CONFIG_DIR="/palworld/Pal/Saved/Config/LinuxServer"
 CONFIG_FILE="${CONFIG_DIR}/PalWorldSettings.ini"
+GAME_USER_CONFIG_FILE="${CONFIG_DIR}/GameUserSettings.ini"
 
 # Add various options based on environment variables
 [ -n "${PLAYERS}" ] && STARTCOMMAND="${STARTCOMMAND} -players=${PLAYERS}"
@@ -16,6 +18,8 @@ echo "create ConfigPath: ${CONFIG_DIR}"
 mkdir -p ${CONFIG_DIR}
 echo "copy${TMP_CONFIG} to ${CONFIG_FILE}"
 cp ${TMP_CONFIG} ${CONFIG_FILE}
+cp ${GAME_USER_CONFIG_TMP} ${GAME_USER_CONFIG_FILE}
+
 
 echo "take ownership of ${CONFIG_FILE}"
 chown steam:steam ${CONFIG_FILE}
@@ -27,6 +31,8 @@ sed -i "s/PUBLIC_IP/$PUBLIC_IP/g" $CONFIG_FILE
 
 echo "set config to readonly"
 chmod 444 ${CONFIG_FILE}
+chown steam:steam ${GAME_USER_CONFIG_FILE}
+chmod 444 ${GAME_USER_CONFIG_FILE}
 
 # Change to the game directory
 cd /palworld 

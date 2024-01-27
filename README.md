@@ -1,4 +1,4 @@
-# Palworld Dedicated Server Docker
+# Palworld Dedicated Server for Kubernetes
 
 This documentation provides a comprehensive guide on deploying and managing a Palworld dedicated server using Docker and Kubernetes in a Raspberry Pi environment. Palworld is a popular game available on [Steam](https://store.steampowered.com/app/1623730/Palworld/), and this guide covers the configuration and management of its dedicated server.
 

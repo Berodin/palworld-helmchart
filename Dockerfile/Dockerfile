@@ -39,11 +39,9 @@ RUN useradd -m -s /bin/bash fex \
     && usermod -aG sudo fex \
     && echo "fex ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/fex
 
-# Weitere Benutzerkonfigurationen
-RUN useradd -m -s /bin/bash steam \
-    && echo 'root:steamcmd' | chpasswd
-
-RUN mkdir -p /palworld && chown -R steam:steam /palworld
+RUN groupadd -r steam -g 1001 && \
+    useradd -u 1001 -r -g steam -m -d /home/steam -s /bin/bash -c "Steam User" steam && \
+    echo 'root:steamcmd' | chpasswd
 
 # Kopieren Sie Ihre Skripte in das Image
 COPY scripts/init.sh /home/steam/init.sh
@@ -81,7 +79,6 @@ RUN echo '{"Config":{"RootFS":"Ubuntu_22_04"}}' > ./Config.json
 WORKDIR /home/steam/Steam
 RUN curl -sqL "https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz" | tar zxvf -
 
-USER root
 # Setzen Sie den Arbeitsordner und den Eintrittspunkt
 WORKDIR /home/steam
 ENTRYPOINT ["/bin/bash", "/home/steam/init.sh"]

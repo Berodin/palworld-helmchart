@@ -38,4 +38,4 @@ echo "${STARTCOMMAND}"
 printf "\e[0;32m*****STARTING SERVER*****\e[0m\n"
 
 # Execute the start command as 'steam' user
-su steam -c  "FEXBash ${STARTCOMMAND}"
+FEXBash "${STARTCOMMAND}"

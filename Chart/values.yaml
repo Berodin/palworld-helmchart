@@ -5,6 +5,11 @@ image:
   pullPolicy: IfNotPresent
   tag: "latest"
 
+securityContext:
+  runAsUser: 1001
+  runAsGroup: 1001
+  fsGroup: 1001
+
 resources:
   requests:
     cpu: 500m
@@ -14,6 +19,13 @@ persistence:
   enabled: true
   serverdir:
     existingClaim: ""
+
+service:
+  nodePorts:
+    queryPortTCP: null
+    queryPortUDP: null
+    gamePortTCP: null
+    gamePortUDP: null
 
 env:
   PUID: 1000

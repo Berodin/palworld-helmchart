@@ -34,8 +34,8 @@ spec:
         resources:
           {{- toYaml .Values.resources | nindent 12 }}
         volumeMounts:
-          - name: serverdir
-            mountPath: /palworld
+          - name: savegames
+            mountPath: /palworld/Pal/Saved/SaveGames
           - name: config
             mountPath: /tmp/PalWorldSettings.ini
             subPath: PalWorldSettings.ini
@@ -59,7 +59,7 @@ spec:
                 name: {{ include "palworld.fullname" . }}
                 key: PUBLIC_IP
       volumes:
-        - name: serverdir
+        - name: savegames
           persistentVolumeClaim:
             claimName: {{ .Values.persistence.serverdir.existingClaim }}
         - name: config

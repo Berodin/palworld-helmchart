@@ -1,151 +1,156 @@
 # Palworld Dedicated Server for Kubernetes
 
-This documentation provides a comprehensive guide on deploying and managing a Palworld dedicated server using Docker and Kubernetes in a Raspberry Pi environment. Palworld is a popular game available on [Steam](https://store.steampowered.com/app/1623730/Palworld/), and this guide covers the configuration and management of its dedicated server.
+This documentation provides a guide on deploying and managing a Palworld dedicated server using Dockerimages and Kubernetes in a Raspberry Pi environment. Palworld is a popular game available on [Steam](https://store.steampowered.com/app/1623730/Palworld/), and this guide covers the configuration and management of its dedicated server.
 
 ## Overview
 
-This Docker container for the Palworld dedicated server is only compatible with arm64 at the moment. The configuration involves Kubernetes YAML files and environment variables to customize the server setup.
+This Docker container for the Palworld dedicated server is only compatible with arm64 and uses [FEX](https://github.com/FEX-Emu/FEX). The configuration involves Kubernetes YAML files and environment variables to customize the server setup.
 
 ### Kubernetes Deployment
 
 The Kubernetes deployment is managed through various YAML files, each serving a specific purpose:
 
-1. `values.yaml`: Defines the default values for the server's deployment.
-2. `service.yaml`: For setting up the Kubernetes service.
-3. `secret.yaml`: To manage secrets like server and admin passwords.
-4. `deployment.yaml`: Defines the deployment setup.
-5. `configmap.yaml`: For non-sensitive configuration data.
-6. `_helpers.tpl`: Template helpers for consistent naming and labeling
+- `values.yaml`: Defines the default values for the server's deployment.
+- `service.yaml`: For setting up the Kubernetes service.
+- `secret.yaml`: To manage secrets like server and admin passwords.
+- `deployment.yaml`: Defines the deployment setup.
+- `configmap.yaml`: For non-sensitive configuration data.
+- `_helpers.tpl`: Template helpers for consistent naming and labeling.
 
 #### `values.yaml` Structure
 
-The `values.yaml` file is the central configuration file. Here's an overview of its structure:
+| Key               | Description                                           | Default Value                          |
+|-------------------|-------------------------------------------------------|----------------------------------------|
+| `replicaCount`    | Number of pod replicas in the deployment              | `1`                                    |
+| `image.repository`| Docker image repository for the server                | `"your-docker-image-repo/palworld"`    |
+| `image.pullPolicy`| Image pull policy                                     | `"IfNotPresent"`                       |
+| `image.tag`       | Image tag                                             | `"latest"`                             |
+| `securityContext` | Security context for the pod                          | `{ runAsUser: 1001, runAsGroup: 1001, fsGroup: 1001 }` |
+| `resources`       | CPU and memory requests                               | `{ requests: { cpu: "500m", memory: "1024Mi" } }` |
+| `persistence`     | Persistent storage options                            | `{ enabled: true, serverdir: { existingClaim: "" } }` |
+| `env`             | Environment variables for server configuration       | Detailed below                         |
+| `palWorldSettings`| Game-specific settings                                | Detailed below                         |
+| `secrets`         | Sensitive information like passwords and IP addresses | `{ AdminPassword: "D0n01tRyTh4t", ServerPassword: "", PublicIP: "" }` |
 
-1. **replicaCount**: Specifies the number of pod replicas in the Kubernetes deployment.
-2. **image**: Defines the Docker image details for the server.
-3. **resources**: Sets the CPU and memory requests.
-4. **persistence**: Configures persistent storage options.
-5. **env**: Lists essential environment variables for the server.
-6. **palWorldSettings**: Details specific game settings.
-7. **secrets**: Contains sensitive information like passwords and IP addresses.
+#### Environment Variables
 
-#### Detailed Breakdown
-
-Here's a detailed breakdown of each section:
-
-- **replicaCount**: `1`
-- **image**:
-  - `repository`: "your-docker-image-repo/palworld"
-  - `pullPolicy`: "IfNotPresent"
-  - `tag`: "latest"
-- **resources**:
-  - `requests`:
-    - `cpu`: "500m"
-    - `memory`: "1024Mi"
-- **persistence**:
-  - `enabled`: `true`
-  - `serverdir`:
-    - `existingClaim`: ""
-- **env**:
-  - `PUID`: `1000`
-  - `PLAYERS`: `10`
-  - `MULTITHREADING`: `"false"`
-  - `COMMUNITY`: `"false"`
-  - `UPDATE_ON_BOOT`: `"true"`
-- **palWorldSettings**: Custom game settings (like `Difficulty`, `DayTimeSpeedRate`, `ExpRate`, etc.)
-- **secrets**:
-  - `AdminPassword`: "D0n01tRyTh4t"
-  - `ServerPassword`: ""
-  - `PublicIP`: ""
-
-### Environment Variables
-
-Update the server settings using these environment variables:
-
-| Variable          | Description                                  | Default Value      | Allowed Values                                      |
-|-------------------|----------------------------------------------|--------------------|-----------------------------------------------------|
-| `PUID`            | User ID for the server process               | 1000               | Integer                                             |
-| `PLAYERS`         | Maximum number of players                    | 10                 | Integer                                             |
-| `MULTITHREADING`  | Enable/disable multithreading                | "false"            | "true" / "false"                                    |
-| `COMMUNITY`       | Community server visibility                  | "false"            | "true" / "false"                                    |
-| `UPDATE_ON_BOOT`  | Update server on boot                        | "true"             | "true" / "false"                                    |
-
+| Variable          | Description                                  | Default Value |
+|-------------------|----------------------------------------------|---------------|
+| `PUID`            | User ID for the server process               | `1000`        |
+| `PLAYERS`         | Maximum number of players                    | `10`          |
+| `MULTITHREADING`  | Enable/disable multithreading                | `"false"`     |
+| `COMMUNITY`       | Community server visibility                  | `"false"`     |
+| `UPDATE_ON_BOOT`  | Update server on boot                        | `"true"`      |
+| `PORT`            | Port for server communication                | `27015`       |
 
 ### Game Settings (`palWorldSettings`)
 
-1. **General Settings**
-   - `Difficulty`: Sets the overall game difficulty (e.g., None, Easy, Hard).
-   - `ServerName`: Name of your server (e.g., "MyPaltopia").
-   - `ServerDescription`: A brief description of your server.
-   - `PublicPort`: Port for public server access (e.g., 8211).
-   - `Region`: Geographic region setting for the server.
+The `palWorldSettings` section provides a comprehensive list of game-specific settings, allowing fine-tuning of the gameplay experience. These settings cover a wide range of aspects from general server settings to gameplay mechanics, player and Pal behavior, and server and guild management.
 
-2. **Rate Adjustments**
-   - `DayTimeSpeedRate`, `NightTimeSpeedRate`: Adjust the speed of day/night cycle.
-   - `ExpRate`: Experience points rate.
-   - `PalCaptureRate`: Rate of capturing Pals.
-   - `PalSpawnNumRate`: Rate of Pal spawning.
-   - `CollectionDropRate`: Rate of item drop from collection.
-   - `CollectionObjectHpRate`: Health points of collectible objects.
-   - `CollectionObjectRespawnSpeedRate`: Respawn rate of collectible objects.
-   - `EnemyDropItemRate`: Item drop rate from enemies.
-   - `WorkSpeedRate`: Rate of work or activity speed.
+#### General Settings
 
-3. **Player and Pal Settings**
-   - `PlayerDamageRateAttack`, `PlayerDamageRateDefense`: Player's damage rates for attack and defense.
-   - `PlayerStomachDecreaceRate`, `PlayerStaminaDecreaceRate`: Rate of stomach decrease and stamina decrease for the player.
-   - `PlayerAutoHPRegeneRate`, `PlayerAutoHpRegeneRateInSleep`: Auto health regeneration rates for the player.
-   - `PalDamageRateAttack`, `PalDamageRateDefense`: Pal's damage rates for attack and defense.
-   - `PalStomachDecreaceRate`, `PalStaminaDecreaceRate`: Rate of stomach decrease and stamina decrease for Pals.
-   - `PalAutoHPRegeneRate`, `PalAutoHpRegeneRateInSleep`: Auto health regeneration rates for Pals.
+| Key                  | Description                                | Default Value   |
+|----------------------|--------------------------------------------|-----------------|
+| `Difficulty`         | Overall game difficulty                    | `None`          |
+| `ServerName`         | Name of the server                         | `"MyPaltopia"`  |
+| `ServerDescription`  | Brief description of the server            | `""`            |
+| `PublicPort`         | Port for public server access              | `8211`          |
+| `Region`             | Geographic region of the server            | `""`            |
 
-4. **Building and Object Settings**
-   - `BuildObjectDamageRate`: Damage rate for building objects.
-   - `BuildObjectDeteriorationDamageRate`: Deterioration rate for building objects.
+#### Rate Adjustments
 
-5. **Gameplay Mechanics**
-   - `DeathPenalty`: Type of penalty on death (e.g., All, None).
-   - `bEnablePlayerToPlayerDamage`: Enable/disable damage between players.
-   - `bEnableFriendlyFire`: Enable/disable friendly fire.
-   - `bEnableInvaderEnemy`: Enable/disable invader enemies.
-   - `bActiveUNKO`: Unknown setting (True/False).
-   - `bEnableAimAssistPad`, `bEnableAimAssistKeyboard`: Enable/disable aim assist for pad and keyboard.
-   - `bIsMultiplay`: Enable/disable multiplayer mode.
-   - `bIsPvP`: Enable/disable Player vs Player mode.
-   - `bCanPickupOtherGuildDeathPenaltyDrop`: Allow/disallow picking up items dropped on death by other guilds.
-   - `bEnableNonLoginPenalty`: Enable/disable penalty for not logging in.
-   - `bEnableFastTravel`: Enable/disable fast travel.
-   - `bIsStartLocationSelectByMap`: Enable/disable start location selection by map.
-   - `bExistPlayerAfterLogout`: Keep/disappear player character after logout.
-   - `bEnableDefenseOtherGuildPlayer`: Enable/disable defense against other guild players.
+| Key                           | Description                                        | Default Value |
+|-------------------------------|----------------------------------------------------|---------------|
+| `DayTimeSpeedRate`            | Speed of day/night cycle                           | `1.000000`    |
+| `NightTimeSpeedRate`          | Speed of night/day cycle                           | `1.000000`    |
+| `ExpRate`                     | Experience points rate                             | `1.000000`    |
+| `PalCaptureRate`              | Rate of capturing Pals                             | `1.000000`    |
+| `PalSpawnNumRate`             | Rate of Pal spawning                               | `1.000000`    |
+| `CollectionDropRate`          | Rate of item drop from collection                  | `1.000000`    |
+| `CollectionObjectHpRate`      | Health points of collectible objects               | `1.000000`    |
+| `CollectionObjectRespawnSpeedRate` | Respawn rate of collectible objects             | `1.000000`    |
+| `EnemyDropItemRate`           | Item drop rate from enemies                        | `1.000000`    |
+| `WorkSpeedRate`               | Rate of work or activity speed                     | `1.000000`    |
 
-6. **Server and Guild Settings**
-   - `DropItemMaxNum`, `DropItemMaxNum_UNKO`: Maximum number of drop items and UNKO items.
-   - `BaseCampMaxNum`, `BaseCampWorkerMaxNum`: Maximum number of base camps and workers.
-   - `DropItemAliveMaxHours`: Hours that dropped items remain.
-   - `bAutoResetGuildNoOnlinePlayers`: Auto reset guild when no players are online.
-   - `AutoResetGuildTimeNoOnlinePlayers`: Time for auto reset of guild.
-   - `GuildPlayerMaxNum`: Maximum number of players in a guild.
-   - `CoopPlayerMaxNum`, `ServerPlayerMaxNum`: Maximum number of players in co-op and server.
-   - `PalEggDefaultHatchingTime`: Default hatching time for Pal eggs.
+#### Player and Pal Settings
 
-7. **RCON and Security**
-   - `RCONEnabled`, `RCONPort`: Enable RCON and set its port.
-   - `bUseAuth`: Enable/disable authentication.
-   - `BanListURL`: URL for the ban list.
+| Key                           | Description                                        | Default Value |
+|-------------------------------|----------------------------------------------------|---------------|
+| `PlayerDamageRateAttack`      | Player's damage rate for attack                    | `1.000000`    |
+| `PlayerDamageRateDefense`     | Player's damage rate for defense                   | `1.000000`    |
+| `PlayerStomachDecreaceRate`   | Rate of stomach decrease for the player            | `1.000000`    |
+| `PlayerStaminaDecreaceRate`   | Rate of stamina decrease for the player            | `1.000000`    |
+| `PlayerAutoHPRegeneRate`      | Auto health regeneration rate for the player       | `1.000000`    |
+| `PlayerAutoHpRegeneRateInSleep` | Auto health regen rate for the player in sleep    | `1.000000`    |
+| `PalDamageRateAttack`         | Pal's damage rate for attack                       | `1.000000`    |
+| `PalDamageRateDefense`        | Pal's damage rate for defense                      | `1.000000`    |
+| `PalStomachDecreaceRate`      | Rate of stomach decrease for Pals                  | `1.000000`    |
+| `PalStaminaDecreaceRate`      | Rate of stamina decrease for Pals                  | `1.000000`    |
+| `PalAutoHPRegeneRate`         | Auto health regeneration rate for Pals             | `1.000000`    |
+| `PalAutoHpRegeneRateInSleep`  | Auto health regen rate for Pals in sleep           | `1.000000`    |
 
-8. **Secrets**
-   - `AdminPassword`: Administrative password for secure server management.
-   - `ServerPassword`: Password for secure server access.
-   - `PublicIP`: Public IP address of the server.
+#### Building and Object Settings
 
-### Secrets Management
+| Key                           | Description                                        | Default Value |
+|-------------------------------|----------------------------------------------------|---------------|
+| `BuildObjectDamageRate`       | Damage rate for building objects                   | `1.000000`    |
+| `BuildObjectDeteriorationDamageRate` | Deterioration rate for building objects       | `1.000000`    |
+
+#### Gameplay Mechanics
+
+| Key                               | Description                                       | Default Value |
+|-----------------------------------|---------------------------------------------------|---------------|
+| `DeathPenalty`                    | Type of penalty on death                          | `All`         |
+| `bEnablePlayerToPlayerDamage`     | Enable/disable damage between players             | `False`       |
+| `bEnableFriendlyFire`             | Enable/disable friendly fire                      | `False`       |
+| `bEnableInvaderEnemy`             | Enable/disable invader enemies                    | `True`        |
+| `bActiveUNKO`                     | Unknown setting                                   | `False`       |
+| `bEnableAimAssistPad`             | Enable/disable aim assist for pad                 | `True`        |
+| `bEnableAimAssistKeyboard`        | Enable/disable aim assist for keyboard            | `False`       |
+| `bIsMultiplay`                    | Enable/disable multiplayer mode                   | `False`       |
+| `bIsPvP`                          | Enable/disable Player vs Player mode              | `False`       |
+| `bCanPickupOtherGuildDeathPenaltyDrop` | Allow/disallow picking up items dropped on death by other guilds | `False` |
+| `bEnableNonLoginPenalty`          | Enable/disable penalty for not logging in         | `True`        |
+| `bEnableFastTravel`               | Enable/disable fast travel                        | `True`        |
+| `bIsStartLocationSelectByMap`     | Enable/disable start location selection by map    | `True`        |
+| `bExistPlayerAfterLogout`         | Keep/disappear player character after logout      | `False`       |
+| `bEnableDefenseOtherGuildPlayer`  | Enable/disable defense against other guild players| `False`       |
+
+#### Server and Guild Settings
+
+| Key                               | Description                                       | Default Value |
+|-----------------------------------|---------------------------------------------------|---------------|
+| `DropItemMaxNum`                  | Maximum number of drop items                      | `3000`        |
+| `DropItemMaxNum_UNKO`             | Maximum number of UNKO items                      | `100`         |
+| `BaseCampMaxNum`                  | Maximum number of base camps                      | `128`         |
+| `BaseCampWorkerMaxNum`            | Maximum number of workers for base camps          | `15`          |
+| `DropItemAliveMaxHours`           | Hours that dropped items remain                   | `1.000000`    |
+| `bAutoResetGuildNoOnlinePlayers`  | Auto reset guild when no players are online       | `False`       |
+| `AutoResetGuildTimeNoOnlinePlayers` | Time for auto reset of guild                     | `72.000000`   |
+| `GuildPlayerMaxNum`               | Maximum number of players in a guild              | `20`          |
+| `CoopPlayerMaxNum`                | Maximum number of players in co-op                | `4`           |
+| `ServerPlayerMaxNum`              | Maximum number of players in server               | `32`          |
+| `PalEggDefaultHatchingTime`       | Default hatching time for Pal eggs                | `72.000000`   |
+
+#### RCON and Security
+
+| Key               | Description                                 | Default Value                         |
+|-------------------|---------------------------------------------|---------------------------------------|
+| `RCONEnabled`     | Enable RCON for remote server management    | `False`                               |
+| `RCONPort`        | Port for RCON communication                 | `25575`                               |
+| `bUseAuth`        | Enable/disable authentication               | `True`                                |
+| `BanListURL`      | URL for the ban list                        | `"https://api.palworldgame.com/api/banlist.txt"` |
+
+#### Secrets Management
 
 Sensitive information is handled in the `secrets` section:
 
-- **AdminPassword**: ""
-- **ServerPassword**: ""
-- **PublicIP**: ""
+| Key               | Description                                 | Default Value                         |
+|-------------------|---------------------------------------------|---------------------------------------|
+| `AdminPassword`     | Administrative password for secure server management.    | `nil`                |
+| `ServerPassword`    | Password for secure server access.              | `nil`                         |
+| `PublicIP`        | Public IP address of the server.               | `nil`                                |
+
 
 ### Game Ports Configuration
 
@@ -165,6 +170,5 @@ RCON is not used at the moment.
 Common server commands include `Shutdown`, `DoExit`, `Broadcast`, and more. For a full list of commands, visit [Palworld Server Commands](https://tech.palworldgame.com/server-commands).
 
 ### Reporting Issues and Feature Requests
-
 
 This documentation serves as a comprehensive guide for deploying and managing a Palworld dedicated server using Docker and Kubernetes in a Raspberry Pi environment, tailored to both beginners and experienced users.

@@ -6,33 +6,13 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Aktualisieren Sie das System und installieren Sie die notwendigen Pakete
 RUN apt-get update && apt-get install -y \
-    git \
-    cmake \
-    ninja-build \
-    pkg-config \
-    ccache \
-    clang \
-    llvm \
-    lld \
-    binfmt-support \
-    libsdl2-dev \
-    libepoxy-dev \
-    libssl-dev \
-    python-setuptools \
-    g++-x86-64-linux-gnu \
-    nasm \
-    python3-clang \
-    libstdc++-10-dev-i386-cross \
-    libstdc++-10-dev-amd64-cross \
-    libstdc++-10-dev-arm64-cross \
-    squashfs-tools \
-    squashfuse \
-    libc-bin \
-    expect \
-    curl \
-    sudo \
-    fuse \
-    wget
+    git cmake ninja-build pkg-config ccache clang llvm lld binfmt-support \
+    libsdl2-dev libepoxy-dev libssl-dev python-setuptools g++-x86-64-linux-gnu \
+    nasm python3-clang libstdc++-10-dev-i386-cross libstdc++-10-dev-amd64-cross \
+    libstdc++-10-dev-arm64-cross squashfs-tools squashfuse libc-bin expect \
+    curl sudo fuse wget \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # Fügen Sie Benutzer hinzu und konfigurieren Sie sie
 RUN useradd -m -s /bin/bash fex \

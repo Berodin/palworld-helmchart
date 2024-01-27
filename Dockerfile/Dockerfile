@@ -40,8 +40,9 @@ RUN useradd -m -s /bin/bash fex \
     && echo "fex ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/fex
 
 RUN groupadd -r steam -g 1001 && \
-    useradd -u 1001 -r -g steam -m -d /home/steam -s /bin/bash -c "Steam User" steam && \
-    echo 'root:steamcmd' | chpasswd
+    useradd -u 1001 -r -g steam -m -d /home/steam -s /bin/bash -c "Steam User" Steam && \
+    echo 'steam ALL=(ALL) NOPASSWD: /bin/chown, /bin/chmod' >> /etc/sudoers
+
 
 # Kopieren Sie Ihre Skripte in das Image
 COPY scripts/init.sh /home/steam/init.sh

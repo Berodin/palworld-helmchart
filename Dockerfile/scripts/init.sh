@@ -1,5 +1,7 @@
 #!/bin/bash
 
+sudo chown -R steam:steam /palworld
+sudo chmod -R 775 /palworld
 
 # If UPDATE_ON_BOOT is set, update the server
 if [ "${UPDATE_ON_BOOT}" = "true" ]; then

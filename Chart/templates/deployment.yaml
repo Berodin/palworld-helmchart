@@ -25,7 +25,7 @@ spec:
           command:
           - sh
           - -c
-          - (chmod 0775 /palworld/Pal/Saved/SaveGames; chgrp 1001 /palworld/Pal/Saved/SaveGames)
+          - (chmod -R 0775 /palworld; chgrp -R 1001 /palworld;)
       securityContext:
         runAsUser: {{ .Values.securityContext.runAsUser }}
         runAsGroup: {{ .Values.securityContext.runAsGroup }}

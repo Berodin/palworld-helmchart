@@ -21,7 +21,7 @@ spec:
             runAsUser: 0
           volumeMounts:
           - name: savegames
-            mountPath: /palworld/Pal/Saved/SaveGames
+            mountPath: /palworld
           command:
           - sh
           - -c

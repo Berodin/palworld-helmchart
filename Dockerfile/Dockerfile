@@ -40,7 +40,7 @@ RUN useradd -m -s /bin/bash fex \
     && echo "fex ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/fex
 
 RUN groupadd -r steam -g 1001 && \
-    useradd -u 1001 -r -g steam -m -d /home/steam -s /bin/bash -c "Steam User" Steam && \
+    useradd -u 1001 -r -g steam -m -d /home/steam -s /bin/bash -c "Steam User" steam && \
     echo 'steam ALL=(ALL) NOPASSWD: /bin/chown, /bin/chmod' >> /etc/sudoers
 
 

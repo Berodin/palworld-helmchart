@@ -28,7 +28,6 @@ service:
     gamePortUDP: null
 
 env:
-  PUID: 1000
   PLAYERS: 10
   MULTITHREADING: "false"
   COMMUNITY: "false"

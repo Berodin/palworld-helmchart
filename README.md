@@ -36,7 +36,6 @@ The Kubernetes deployment is managed through various YAML files, each serving a 
 
 | Variable          | Description                                  | Default Value |
 |-------------------|----------------------------------------------|---------------|
-| `PUID`            | User ID for the server process               | `1000`        |
 | `PLAYERS`         | Maximum number of players                    | `10`          |
 | `MULTITHREADING`  | Enable/disable multithreading                | `"false"`     |
 | `COMMUNITY`       | Community server visibility                  | `"false"`     |

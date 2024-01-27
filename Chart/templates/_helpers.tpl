@@ -48,3 +48,18 @@ Define the chart name and version.
 {{- define "palworld.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
+
+
+{{/*
+calculate hash value based on palWorldSettings in values.yaml
+*/}}
+{{- define "palworld.settingsHash" -}}
+{{- include "palWorldSettings" . | sha256sum -}}
+{{- end -}}
+    
+{{/*
+serialise palWorldSettings for hash calculation
+*/}}
+{{- define "palWorldSettings" -}}
+{{- toYaml .Values.palWorldSettings | trim -}}
+{{- end -}}

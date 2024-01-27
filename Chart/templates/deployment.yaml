@@ -14,18 +14,6 @@ spec:
       labels:
         {{- include "palworld.selectorLabels" . | nindent 8 }}
     spec:
-      initContainers:
-        - name: nfs-fixer
-          image: alpine
-          securityContext:
-            runAsUser: 0
-          volumeMounts:
-          - name: savegames
-            mountPath: /palworld
-          command:
-          - sh
-          - -c
-          - (chmod -R 0775 /palworld; chgrp -R 1001 /palworld;)
       securityContext:
         runAsUser: {{ .Values.securityContext.runAsUser }}
         runAsGroup: {{ .Values.securityContext.runAsGroup }}
@@ -74,6 +62,8 @@ spec:
               secretKeyRef:
                 name: {{ include "palworld.fullname" . }}
                 key: PUBLIC_IP
+          - name: CONFIG_HASH
+            value: {{ include "palworld.settingsHash" . | quote }}
       volumes:
         - name: savegames
           persistentVolumeClaim:

@@ -81,6 +81,7 @@ RUN echo '{"Config":{"RootFS":"Ubuntu_22_04"}}' > ./Config.json
 WORKDIR /home/steam/Steam
 RUN curl -sqL "https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz" | tar zxvf -
 
+USER root
 # Setzen Sie den Arbeitsordner und den Eintrittspunkt
 WORKDIR /home/steam
 ENTRYPOINT ["/bin/bash", "/home/steam/init.sh"]

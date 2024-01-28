@@ -1,32 +1,23 @@
+# Basic application settings
 replicaCount: 1
-
 image:
   repository: your-docker-image-repo/palworld
-  pullPolicy: IfNotPresent
   tag: "latest"
+  pullPolicy: IfNotPresent
 
+# Security context for running the containers
 securityContext:
   runAsUser: 1001
   runAsGroup: 1001
   fsGroup: 1001
 
+# Resource requests and limits
 resources:
   requests:
     cpu: 500m
     memory: 1024Mi
 
-persistence:
-  enabled: true
-  serverdir:
-    existingClaim: ""
-
-service:
-  nodePorts:
-    queryPortTCP: null
-    queryPortUDP: null
-    gamePortTCP: null
-    gamePortUDP: null
-
+# Environment variables for application configuration
 env:
   PLAYERS: 10
   MULTITHREADING: "false"
@@ -34,34 +25,69 @@ env:
   UPDATE_ON_BOOT: "true"
   PORT: 27015
 
+# Configuration for persistent storage
+persistence:
+  enabled: true
+  serverdir:
+    existingClaim: ""
+
+# Service configuration (ports)
+service:
+  nodePorts:
+    queryPortTCP: null
+    queryPortUDP: null
+    gamePortTCP: null
+    gamePortUDP: null
+
+# User-specific game settings
 gameUserSettings:
   DedicatedServerName: "yourServername"
 
 palWorldSettings:
+  # General Settings
+  ServerName: "MyPaltopia"
+  ServerDescription: ""
+  ServerPlayerMaxNum: 32
+  CoopPlayerMaxNum: 4
+  PublicPort: 8211
+  RCONEnabled: False
+  RCONPort: 25575
+  Region: ""
+  bUseAuth: True
+  BanListURL: "https://api.palworldgame.com/api/banlist.txt"
+
+  # Rate Adjustments
   Difficulty: None
   DayTimeSpeedRate: 1.000000
   NightTimeSpeedRate: 1.000000
   ExpRate: 1.000000
   PalCaptureRate: 1.000000
   PalSpawnNumRate: 1.000000
-  PalDamageRateAttack: 1.000000
-  PalDamageRateDefense: 1.000000
+  CollectionDropRate: 1.000000
+  CollectionObjectHpRate: 1.000000
+  CollectionObjectRespawnSpeedRate: 1.000000
+  EnemyDropItemRate: 1.000000
+  WorkSpeedRate: 1.000000
+
+  # Player and Pal Settings
   PlayerDamageRateAttack: 1.000000
   PlayerDamageRateDefense: 1.000000
   PlayerStomachDecreaceRate: 1.000000
   PlayerStaminaDecreaceRate: 1.000000
   PlayerAutoHPRegeneRate: 1.000000
   PlayerAutoHpRegeneRateInSleep: 1.000000
+  PalDamageRateAttack: 1.000000
+  PalDamageRateDefense: 1.000000
   PalStomachDecreaceRate: 1.000000
   PalStaminaDecreaceRate: 1.000000
   PalAutoHPRegeneRate: 1.000000
   PalAutoHpRegeneRateInSleep: 1.000000
+
+  # Building and Object Settings
   BuildObjectDamageRate: 1.000000
   BuildObjectDeteriorationDamageRate: 1.000000
-  CollectionDropRate: 1.000000
-  CollectionObjectHpRate: 1.000000
-  CollectionObjectRespawnSpeedRate: 1.000000
-  EnemyDropItemRate: 1.000000
+
+  # Gameplay Mechanics
   DeathPenalty: All
   bEnablePlayerToPlayerDamage: False
   bEnableFriendlyFire: False
@@ -69,6 +95,16 @@ palWorldSettings:
   bActiveUNKO: False
   bEnableAimAssistPad: True
   bEnableAimAssistKeyboard: False
+  bIsMultiplay: False
+  bIsPvP: False
+  bCanPickupOtherGuildDeathPenaltyDrop: False
+  bEnableNonLoginPenalty: True
+  bEnableFastTravel: True
+  bIsStartLocationSelectByMap: True
+  bExistPlayerAfterLogout: False
+  bEnableDefenseOtherGuildPlayer: False
+
+  # Server and Guild Settings
   DropItemMaxNum: 3000
   DropItemMaxNum_UNKO: 100
   BaseCampMaxNum: 128
@@ -78,27 +114,10 @@ palWorldSettings:
   AutoResetGuildTimeNoOnlinePlayers: 72.000000
   GuildPlayerMaxNum: 20
   PalEggDefaultHatchingTime: 72.000000
-  WorkSpeedRate: 1.000000
-  bIsMultiplay: False
-  bIsPvP: False
-  bCanPickupOtherGuildDeathPenaltyDrop: False
-  bEnableNonLoginPenalty: True
-  bEnableFastTravel: True
-  bIsStartLocationSelectByMap: True
-  bExistPlayerAfterLogout: False
-  bEnableDefenseOtherGuildPlayer: False
-  CoopPlayerMaxNum: 4
-  ServerPlayerMaxNum: 32
-  ServerName: "MyPaltopia"
-  ServerDescription: ""
-  PublicPort: 8211
-  RCONEnabled: False
-  RCONPort: 25575
-  Region: ""
-  bUseAuth: True
-  BanListURL: "https://api.palworldgame.com/api/banlist.txt"
 
+
+# Secrets for secure information
 secrets:
   AdminPassword: "D0n01tRyTh4t"
   ServerPassword: ""
-  PublicIP:
+  PublicIP: ""

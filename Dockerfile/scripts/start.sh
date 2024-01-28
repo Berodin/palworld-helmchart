@@ -1,49 +1,65 @@
 #!/bin/bash
 
-# Base start command
-STARTCOMMAND="./PalServer.sh"
-TMP_CONFIG="/tmp/PalWorldSettings.ini"
-GAME_USER_CONFIG_TMP="/tmp/GameUserSettings.ini"
-CONFIG_DIR="/palworld/Pal/Saved/Config/LinuxServer"
-CONFIG_FILE="${CONFIG_DIR}/PalWorldSettings.ini"
-GAME_USER_CONFIG_FILE="${CONFIG_DIR}/GameUserSettings.ini"
+# Initialize the base server start command
+serverStartCommand="./PalServer.sh"
+configDirectory="/palworld/Pal/Saved/Config/LinuxServer"
+serverSettingsTempPath="/tmp/PalWorldSettings.ini" # Temporary path for server settings
+gameUserSettingsTempPath="/tmp/GameUserSettings.ini" # Temporary path for game user settings
+serverSettingsFilePath="${configDirectory}/PalWorldSettings.ini" # Server settings file path
+gameUserSettingsFilePath="${configDirectory}/GameUserSettings.ini" # Game user settings file path. This file holds DedicatedServerName which is the name of the savefolder
 
-# Add various options based on environment variables
-[ -n "${PLAYERS}" ] && STARTCOMMAND="${STARTCOMMAND} -players=${PLAYERS}"
-[ "${COMMUNITY}" = true ] && STARTCOMMAND="${STARTCOMMAND} EpicApp=PalServer"
-[ "${MULTITHREADING}" = true ] && STARTCOMMAND="${STARTCOMMAND} -useperfthreads -NoAsyncLoadingThread -UseMultithreadForDS"
+# Copies the server settings and game user settings files to the server's configuration directory
+copyConfigurationFiles() {
+    echo "Creating configuration directory: ${configDirectory}"
+    mkdir -p "${configDirectory}"
+    echo "Copying temporary server settings file to: ${serverSettingsFilePath}"
+    cp "${serverSettingsTempPath}" "${serverSettingsFilePath}"
+    echo "Copying temporary game user settings file to: ${gameUserSettingsFilePath}"
+    cp "${gameUserSettingsTempPath}" "${gameUserSettingsFilePath}"
+}
 
-# copy configfile to pvc
-echo "create ConfigPath: ${CONFIG_DIR}"
-mkdir -p ${CONFIG_DIR}
-echo "copy ${TMP_CONFIG} to ${CONFIG_FILE}"
-cp ${TMP_CONFIG} ${CONFIG_FILE}
-echo "copy ${GAME_USER_CONFIG_TMP} to ${GAME_USER_CONFIG_FILE}"
-cp ${GAME_USER_CONFIG_TMP} ${GAME_USER_CONFIG_FILE}
+# Adjusts the server start command based on environment variables
+adjustServerStartCommand() {
+    [ -n "${PLAYERS}" ] && serverStartCommand="${serverStartCommand} -players=${PLAYERS}"
+    [ "${COMMUNITY}" = true ] && serverStartCommand="${serverStartCommand} EpicApp=PalServer"
+    if [ "${MULTITHREADING}" = true ]; then
+        serverStartCommand="${serverStartCommand} -useperfthreads -NoAsyncLoadingThread -UseMultithreadForDS"
+    fi
+}
 
+# Updates the server and game user configuration files with environment variables
+updateConfigurationFiles() {
+    echo "Assigning ownership of configuration files to 'steam' user"
+    chown steam:steam "${serverSettingsFilePath}"
+    chown steam:steam "${gameUserSettingsFilePath}"
 
-echo "take ownership of ${CONFIG_FILE}"
-chown steam:steam ${CONFIG_FILE}
+    # Replace placeholders in server settings file with actual environment variable values
+    echo "Updating server settings with environment variables"
+    sed -i "s/ADMIN_PASSWORD/$ADMIN_PASSWORD/g" "${serverSettingsFilePath}"
+    sed -i "s/SERVER_PASSWORD/$SERVER_PASSWORD/g" "${serverSettingsFilePath}"
+    sed -i "s/PUBLIC_IP/$PUBLIC_IP/g" "${serverSettingsFilePath}"
 
-# change values in configfile for passwords and IP
-sed -i "s/ADMIN_PASSWORD/$ADMIN_PASSWORD/g" $CONFIG_FILE
-sed -i "s/SERVER_PASSWORD/$SERVER_PASSWORD/g" $CONFIG_FILE
-sed -i "s/PUBLIC_IP/$PUBLIC_IP/g" $CONFIG_FILE
+    # Additional updates for gameUserSettingsFilePath can be added here if needed
 
-echo "set config to readonly."
-chmod 444 ${CONFIG_FILE}
+    # set Configfiles to readonly. This prevents the server to overwrite the pre-existing ones which default files and forces server to use existing ones.
+    echo "Setting configuration files to read-only mode."
+    chmod 444 "${serverSettingsFilePath}"
+    chmod 444 "${gameUserSettingsFilePath}"
+}
 
-echo "set GameUserSettings.ini to readonly."
-chmod 444 ${GAME_USER_CONFIG_FILE}
+# Main script execution
+copyConfigurationFiles
+adjustServerStartCommand
+updateConfigurationFiles
 
-# Change to the game directory
-cd /palworld 
+# Navigate to the game directory
+cd /palworld
 
-# Display the start command (for verification)
-echo "${STARTCOMMAND}"
+# Echo the final server start command for verification
+echo "Final server start command: ${serverStartCommand}"
 
-# Server start message
-printf "\e[0;32m*****STARTING SERVER*****\e[0m\n"
+# Display a message indicating the server is starting
+printf "\e[0;32m***** STARTING SERVER *****\e[0m\n"
 
-# Execute the start command as 'steam' user
-FEXBash "${STARTCOMMAND}"
+# Execute the server start command under the 'steam' user
+FEXBash "${serverStartCommand}"

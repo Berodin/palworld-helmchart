@@ -16,8 +16,9 @@ GAME_USER_CONFIG_FILE="${CONFIG_DIR}/GameUserSettings.ini"
 # copy configfile to pvc
 echo "create ConfigPath: ${CONFIG_DIR}"
 mkdir -p ${CONFIG_DIR}
-echo "copy${TMP_CONFIG} to ${CONFIG_FILE}"
+echo "copy ${TMP_CONFIG} to ${CONFIG_FILE}"
 cp ${TMP_CONFIG} ${CONFIG_FILE}
+echo "copy ${GAME_USER_CONFIG_TMP} to ${GAME_USER_CONFIG_FILE}"
 cp ${GAME_USER_CONFIG_TMP} ${GAME_USER_CONFIG_FILE}
 
 
@@ -29,9 +30,10 @@ sed -i "s/ADMIN_PASSWORD/$ADMIN_PASSWORD/g" $CONFIG_FILE
 sed -i "s/SERVER_PASSWORD/$SERVER_PASSWORD/g" $CONFIG_FILE
 sed -i "s/PUBLIC_IP/$PUBLIC_IP/g" $CONFIG_FILE
 
-echo "set config to readonly"
+echo "set config to readonly."
 chmod 444 ${CONFIG_FILE}
-chown steam:steam ${GAME_USER_CONFIG_FILE}
+
+echo "set GameUserSettings.ini to readonly."
 chmod 444 ${GAME_USER_CONFIG_FILE}
 
 # Change to the game directory

@@ -42,6 +42,15 @@ The Kubernetes deployment is managed through various YAML files, each serving a 
 | `UPDATE_ON_BOOT`  | Update server on boot                        | `"true"`      |
 | `PORT`            | Port for server communication                | `27015`       |
 
+
+### Server Save Settings (`gameUserSettings`)
+
+the `gameUserSettings` section provides one important value named DedicatedServerName. The gameUserSettings.ini file uses DedicatedServerName to create a new server with savefiles. By giving an existing savefolder and making that file readonly afterwards, the server uses existing save.
+
+| Variable          | Description                                  | Default Value |
+|-------------------|----------------------------------------------|---------------|
+| `DedicatedServerName`         | Savefolder name in /palworld/Pal/Saved/SaveGames/0. You can name an existing folder to use existings saves, or leave it empty so a new server will get created | `yourServername` |
+
 ### Game Settings (`palWorldSettings`)
 
 The `palWorldSettings` section provides a comprehensive list of game-specific settings, allowing fine-tuning of the gameplay experience. These settings cover a wide range of aspects from general server settings to gameplay mechanics, player and Pal behavior, and server and guild management.

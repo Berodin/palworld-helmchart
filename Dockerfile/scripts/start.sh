@@ -14,8 +14,10 @@ copyConfigurationFiles() {
     mkdir -p "${configDirectory}"
     echo "Copying temporary server settings file to: ${serverSettingsFilePath}"
     cp "${serverSettingsTempPath}" "${serverSettingsFilePath}"
-    echo "Copying temporary game user settings file to: ${gameUserSettingsFilePath}"
-    cp "${gameUserSettingsTempPath}" "${gameUserSettingsFilePath}"
+    if [ -f "/tmp/GameUserSettings.ini" ]; then
+        echo "Copying temporary game user settings file to: ${gameUserSettingsFilePath}"
+        cp "${gameUserSettingsTempPath}" "${gameUserSettingsFilePath}"
+    fi
 }
 
 # Adjusts the server start command based on environment variables
@@ -44,7 +46,9 @@ updateConfigurationFiles() {
     # set Configfiles to readonly. This prevents the server to overwrite the pre-existing ones which default files and forces server to use existing ones.
     echo "Setting configuration files to read-only mode."
     chmod 444 "${serverSettingsFilePath}"
-    chmod 444 "${gameUserSettingsFilePath}"
+    if [ -f "/${gameUserSettingsFilePath}" ]; then
+        chmod 444 "${gameUserSettingsFilePath}"
+    fi
 }
 
 # Main script execution

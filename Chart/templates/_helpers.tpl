@@ -63,3 +63,11 @@ serialise palWorldSettings for hash calculation
 {{- define "palWorldSettings" -}}
 {{- toYaml .Values.palWorldSettings | trim -}}
 {{- end -}}
+
+{{- define "palworld.secretsHash" -}}
+{{- include "secrets" . | sha256sum -}}
+{{- end -}}
+
+{{- define "secrets" -}}
+{{- toYaml .Values.secrets | trim -}}
+{{- end -}}

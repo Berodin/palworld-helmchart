@@ -69,6 +69,8 @@ spec:
                 key: PUBLIC_IP
           - name: CONFIG_HASH
             value: {{ include "palworld.settingsHash" . | quote }}
+          - name: SECRETS_HASH
+            value: {{ include "palworld.secretsHash" . | quote }}
       volumes:
         - name: savegames
           persistentVolumeClaim:

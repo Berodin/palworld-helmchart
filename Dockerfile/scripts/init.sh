@@ -12,13 +12,18 @@ if [ "${UPDATE_ON_BOOT}" = "true" ]; then
     # Update or install the Palworld server using steamcmd
     FEXBash "/home/steam/Steam/steamcmd.sh +force_install_dir /palworld +login anonymous +app_update 2394010 validate +quit"
 
-    # Ensure the Steam SDK 64-bit directory exists
-    mkdir -p ~/.steam/sdk64/
     
-    # Update the Steam SDK and copy the steamclient.so to the sdk64 directory
-    FEXBash "/home/steam/Steam/steamcmd.sh +login anonymous +app_update 1007 +quit" \
-        && cp "/home/steam/Steam/steamapps/common/Steamworks SDK Redist/linux64/steamclient.so" ~/.steam/sdk64/
+    
+    
+    
 fi
+
+# Ensure the Steam SDK 64-bit directory exists
+mkdir -p ~/.steam/sdk64/
+
+# Update the Steam SDK and copy the steamclient.so to the sdk64 directory
+FEXBash "/home/steam/Steam/steamcmd.sh +login anonymous +app_update 1007 +quit" \
+    && cp "/home/steam/Steam/steamapps/common/Steamworks SDK Redist/linux64/steamclient.so" ~/.steam/sdk64/
 
 # Execute the start script for the server
 FEXBash /home/steam/start.sh

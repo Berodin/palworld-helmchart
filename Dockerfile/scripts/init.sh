@@ -11,11 +11,6 @@ if [ "${UPDATE_ON_BOOT}" = "true" ]; then
     echo "***** STARTING INSTALL/UPDATE *****"
     # Update or install the Palworld server using steamcmd
     FEXBash "/home/steam/Steam/steamcmd.sh +force_install_dir /palworld +login anonymous +app_update 2394010 validate +quit"
-
-    
-    
-    
-    
 fi
 
 # Ensure the Steam SDK 64-bit directory exists

@@ -7,6 +7,8 @@ serverSettingsTempPath="/tmp/PalWorldSettings.ini" # Temporary path for server s
 gameUserSettingsTempPath="/tmp/GameUserSettings.ini" # Temporary path for game user settings
 serverSettingsFilePath="${configDirectory}/PalWorldSettings.ini" # Server settings file path
 gameUserSettingsFilePath="${configDirectory}/GameUserSettings.ini" # Game user settings file path. This file holds DedicatedServerName which is the name of the savefolder
+engineSettingsTempPath="/tmp/Engine.ini"
+engineSettingsFilePath="${configDirectory}/Engine.ini" 
 
 # Copies the server settings and game user settings files to the server's configuration directory
 copyConfigurationFiles() {
@@ -14,9 +16,12 @@ copyConfigurationFiles() {
     mkdir -p "${configDirectory}"
     echo "Copying temporary server settings file to: ${serverSettingsFilePath}"
     cp "${serverSettingsTempPath}" "${serverSettingsFilePath}"
-    if [ -f "/tmp/GameUserSettings.ini" ]; then
+    if [ -f "${gameUserSettingsTempPath}" ]; then
         echo "Copying temporary game user settings file to: ${gameUserSettingsFilePath}"
         cp "${gameUserSettingsTempPath}" "${gameUserSettingsFilePath}"
+    if [ -f "${engineSettingsTempPath}" ]; then
+    echo "Copying temporary engine settings file to: ${engineSettingsFilePath}"
+    cp "${engineSettingsTempPath}" "${engineSettingsFilePath}"
     fi
 }
 
@@ -34,6 +39,7 @@ updateConfigurationFiles() {
     echo "Assigning ownership of configuration files to 'steam' user"
     chown steam:steam "${serverSettingsFilePath}"
     chown steam:steam "${gameUserSettingsFilePath}"
+    chown steam:steam "${engineSettingsFilePath}"
 
     # Replace placeholders in server settings file with actual environment variable values
     echo "Updating server settings with environment variables"
@@ -46,9 +52,8 @@ updateConfigurationFiles() {
     # set Configfiles to readonly. This prevents the server to overwrite the pre-existing ones which default files and forces server to use existing ones.
     echo "Setting configuration files to read-only mode."
     chmod 444 "${serverSettingsFilePath}"
-    if [ -f "/${gameUserSettingsFilePath}" ]; then
-        chmod 444 "${gameUserSettingsFilePath}"
-    fi
+    chmod 444 "${gameUserSettingsFilePath}"
+    chmod 444 "${engineSettingsFilePath}"
 }
 
 # Main script execution

@@ -43,6 +43,9 @@ spec:
           - name: config
             mountPath: /tmp/PalWorldSettings.ini
             subPath: PalWorldSettings.ini
+          - name: config 
+            mountPath: /tmp/Engine.ini
+            subPath: Engine.ini
           {{- if .Values.gameUserSettings.DedicatedServerName }}
           - name: config
             mountPath: /tmp/GameUserSettings.ini
@@ -81,6 +84,8 @@ spec:
             items:
               - key: PalWorldSettings.ini
                 path: PalWorldSettings.ini
+              - key: Engine.ini
+                path: Engine.ini
               {{- if .Values.gameUserSettings.DedicatedServerName }}
               - key: GameUserSettings.ini
                 path: GameUserSettings.ini

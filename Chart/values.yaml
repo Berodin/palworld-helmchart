@@ -121,3 +121,9 @@ secrets:
   AdminPassword: "D0n01tRyTh4t"
   ServerPassword: ""
   PublicIP: ""
+
+engineConfig:
+  netServerMaxTickRate: 15
+  smoothFrameRate: false
+  useFixedFrameRate: true
+  fixedFrameRate: 30

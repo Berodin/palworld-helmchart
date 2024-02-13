@@ -92,8 +92,8 @@ data:
     NetServerMaxTickRate={{ .Values.engineConfig.netServerMaxTickRate }}
     
     [/Script/Engine.Engine]
-    bSmoothFrameRate={{ .Values.engineConfig.smoothFrameRate | lower }}
-    bUseFixedFrameRate={{ .Values.engineConfig.useFixedFrameRate | lower }}
+    bSmoothFrameRate={{ .Values.engineConfig.smoothFrameRate }}
+    bUseFixedFrameRate={{ .Values.engineConfig.useFixedFrameRate  }}
     FixedFrameRate={{ .Values.engineConfig.fixedFrameRate }}.000000
 
   {{- end }}

@@ -35,15 +35,6 @@ spec:
           - name: udp-gameport
             containerPort: {{ .Values.palWorldSettings.PublicPort }}
             protocol: UDP
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: palworld
-                operator: In
-                values:
-                - primary 
         resources:
           {{- toYaml .Values.resources | nindent 12 }}
         volumeMounts:
@@ -83,6 +74,15 @@ spec:
             value: {{ include "palworld.settingsHash" . | quote }}
           - name: SECRETS_HASH
             value: {{ include "palworld.secretsHash" . | quote }}
+            affinity:
+      nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: palworld
+                operator: In
+                values:
+                - primary 
       volumes:
         - name: serverdir
           persistentVolumeClaim:

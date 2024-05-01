@@ -35,6 +35,15 @@ spec:
           - name: udp-gameport
             containerPort: {{ .Values.palWorldSettings.PublicPort }}
             protocol: UDP
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: palworld
+                operator: In
+                values:
+                - primary 
         resources:
           {{- toYaml .Values.resources | nindent 12 }}
         volumeMounts:

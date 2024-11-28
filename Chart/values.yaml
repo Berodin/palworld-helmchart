@@ -28,8 +28,12 @@ env:
 # Configuration for persistent storage
 persistence:
   enabled: true
-  serverdir:
-    existingClaim: ""
+  useExisting: false # Use an existing PVC if true; create a new PVC if false
+  existingClaim: "" # Name of the existing PVC if useExisting is true
+  storageClassName: "" # Optional: specify the storage class name for the new PVC
+  accessModes:
+  - ReadWriteOnce
+  size: 12Gi
 
 # Service configuration (ports)
 service:
@@ -114,7 +118,6 @@ palWorldSettings:
   AutoResetGuildTimeNoOnlinePlayers: 72.000000
   GuildPlayerMaxNum: 20
   PalEggDefaultHatchingTime: 72.000000
-
 
 # Secrets for secure information
 secrets:

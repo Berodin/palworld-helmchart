@@ -71,3 +71,7 @@ serialise palWorldSettings for hash calculation
 {{- define "secrets" -}}
 {{- toYaml .Values.secrets | trim -}}
 {{- end -}}
+
+{{- if and .Values.persistence.useExisting (empty .Values.persistence.existingClaim) -}}
+{{- fail "`useExisting` is enabled but `existingClaim` is not set!" -}}
+{{- end -}}

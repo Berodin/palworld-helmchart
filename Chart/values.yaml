@@ -34,11 +34,13 @@ persistence:
     size: "10Gi"
 # Service configuration (ports)
 service:
-  nodePorts:
-    queryPortTCP: null
-    queryPortUDP: null
-    gamePortTCP: null
-    gamePortUDP: null
+  ports:
+    query:
+      tcp: 27015
+      udp: 27015
+    game:
+      tcp: 8211
+      udp: 8211
 
 # User-specific game settings
 gameUserSettings:

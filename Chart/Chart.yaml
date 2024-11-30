@@ -1,5 +1,5 @@
 apiVersion: v2
 name: palworld
 description: A Helm chart for deploying Palworld server
-version: 0.2.7
+version: 0.2.8
 appVersion: "1.0"

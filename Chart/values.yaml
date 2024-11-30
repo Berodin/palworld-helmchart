@@ -28,12 +28,8 @@ env:
 # Configuration for persistent storage
 persistence:
   enabled: true
-  useExisting: false # Use an existing PVC if true; create a new PVC if false
-  existingClaim: "" # Name of the existing PVC if useExisting is true
-  storageClassName: "" # Optional: specify the storage class name for the new PVC
-  accessModes:
-  - ReadWriteOnce
-  size: 12Gi
+  serverdir:
+    existingClaim: ""
 
 # Service configuration (ports)
 service:

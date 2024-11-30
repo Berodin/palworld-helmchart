@@ -19,58 +19,74 @@ spec:
         runAsGroup: {{ .Values.securityContext.runAsGroup }}
         fsGroup: {{ .Values.securityContext.fsGroup }}
       containers:
-        - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          ports:
-            - name: tcp-queryport
-              containerPort: {{ .Values.env.PORT }}
-              protocol: TCP
-            - name: udp-queryport
-              containerPort: {{ .Values.env.PORT }}
-              protocol: UDP
-            - name: tcp-gameport
-              containerPort: {{ .Values.palWorldSettings.PublicPort }}
-              protocol: TCP
-            - name: udp-gameport
-              containerPort: {{ .Values.palWorldSettings.PublicPort }}
-              protocol: UDP
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
-          volumeMounts:
-            - name: serverdir
-              mountPath: /palworld
-            - name: config
-              mountPath: /tmp/config
-              readOnly: true
-          envFrom:
-            - configMapRef:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+          - name: tcp-queryport
+            containerPort: {{ .Values.env.PORT }}
+            protocol: TCP
+          - name: udp-queryport
+            containerPort: {{ .Values.env.PORT }}
+            protocol: UDP
+          - name: tcp-gameport
+            containerPort: {{ .Values.palWorldSettings.PublicPort }}
+            protocol: TCP
+          - name: udp-gameport
+            containerPort: {{ .Values.palWorldSettings.PublicPort }}
+            protocol: UDP
+        resources:
+          {{- toYaml .Values.resources | nindent 12 }}
+        volumeMounts:
+          - name: serverdir
+            mountPath: /palworld
+          - name: config
+            mountPath: /tmp/PalWorldSettings.ini
+            subPath: PalWorldSettings.ini
+          - name: config 
+            mountPath: /tmp/Engine.ini
+            subPath: Engine.ini
+          {{- if .Values.gameUserSettings.DedicatedServerName }}
+          - name: config
+            mountPath: /tmp/GameUserSettings.ini
+            subPath: GameUserSettings.ini
+          {{- end }}
+        envFrom:
+          - configMapRef:
+              name: {{ include "palworld.fullname" . }}
+        env:
+          - name: ADMIN_PASSWORD
+            valueFrom:
+              secretKeyRef:
                 name: {{ include "palworld.fullname" . }}
-          env:
-            - name: ADMIN_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "palworld.fullname" . }}
-                  key: ADMIN_PASSWORD
-            - name: SERVER_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "palworld.fullname" . }}
-                  key: SERVER_PASSWORD
-            - name: PUBLIC_IP
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "palworld.fullname" . }}
-                  key: PUBLIC_IP
+                key: ADMIN_PASSWORD
+          - name: SERVER_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "palworld.fullname" . }}
+                key: SERVER_PASSWORD
+          - name: PUBLIC_IP
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "palworld.fullname" . }}
+                key: PUBLIC_IP
+          - name: CONFIG_HASH
+            value: {{ include "palworld.settingsHash" . | quote }}
+          - name: SECRETS_HASH
+            value: {{ include "palworld.secretsHash" . | quote }}
       volumes:
         - name: serverdir
-          {{- if .Values.persistence.useExisting }}
           persistentVolumeClaim:
-            claimName: {{ .Values.persistence.existingClaim }}
-          {{- else }}
-          persistentVolumeClaim:
-            claimName: {{ include "palworld.fullname" . }}-pvc
-          {{- end }}
+            claimName: {{ .Values.persistence.serverdir.existingClaim }}
         - name: config
           configMap:
             name: {{ include "palworld.fullname" . }}
+            items:
+              - key: PalWorldSettings.ini
+                path: PalWorldSettings.ini
+              - key: Engine.ini
+                path: Engine.ini
+              {{- if .Values.gameUserSettings.DedicatedServerName }}
+              - key: GameUserSettings.ini
+                path: GameUserSettings.ini
+              {{- end }}

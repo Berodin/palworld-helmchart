@@ -1,0 +1,15 @@
+{{- if and .Values.persistence.enabled (not .Values.persistence.serverdir.existingClaim) }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "palworld.fullname" . }}-serverdir
+  labels:
+    {{- include "palworld.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.persistence.serverdir.size }}
+  storageClassName: {{ .Values.persistence.serverdir.storageClass }}
+{{- end }}

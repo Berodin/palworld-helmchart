@@ -30,7 +30,8 @@ persistence:
   enabled: true
   serverdir:
     existingClaim: ""
-
+    storageClass: "default"
+    size: "10Gi"
 # Service configuration (ports)
 service:
   nodePorts:

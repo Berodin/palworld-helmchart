@@ -77,7 +77,7 @@ spec:
       volumes:
         - name: serverdir
           persistentVolumeClaim:
-            claimName: {{ .Values.persistence.serverdir.existingClaim }}
+            claimName: {{ if .Values.persistence.serverdir.existingClaim }}{{ .Values.persistence.serverdir.existingClaim }}{{ else }}{{ include "palworld.fullname" . }}-serverdir{{ end }}
         - name: config
           configMap:
             name: {{ include "palworld.fullname" . }}

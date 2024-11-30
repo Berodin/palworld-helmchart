@@ -20,6 +20,7 @@ data:
     AntiAliasingType=AAM_TSR
     DLSSMode=Performance
     GraphicsCommonQuality=0
+  {{- end }}
   Engine.ini: |
     [Core.System]
     Paths=../../../Engine/Content
@@ -95,5 +96,3 @@ data:
     bSmoothFrameRate={{ .Values.engineConfig.smoothFrameRate | lower }}
     bUseFixedFrameRate={{ .Values.engineConfig.useFixedFrameRate | lower }}
     FixedFrameRate={{ .Values.engineConfig.fixedFrameRate }}.000000
-
-  {{- end }}

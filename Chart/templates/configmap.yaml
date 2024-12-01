@@ -90,9 +90,37 @@ data:
     Paths=../../../Pal/Plugins/Wwise/Content
 
     [/Script/OnlineSubsystemUtils.IpNetDriver]
+    
     NetServerMaxTickRate={{ .Values.engineConfig.netServerMaxTickRate }}
     
+    LanServerMaxTickRate={{ .Values.engineConfig.netServerMaxTickRate }}
+    
+    MaxNetTickRate{{ .Values.engineConfig.netServerMaxTickRate }}
+
+    [/script/engine.player]
+
+    ConfiguredInternetSpeed=104857600
+
+    ConfiguredLanSpeed=104857600
+
+    [/script/socketsubsystemepic.epicnetdriver]
+
+    MaxClientRate=104857600
+
+    MaxInternetClientRate=104857600
+    
     [/Script/Engine.Engine]
+    
     bSmoothFrameRate={{ .Values.engineConfig.smoothFrameRate | toString | lower }}
+    
     bUseFixedFrameRate={{ .Values.engineConfig.useFixedFrameRate | toString | lower }}
-    FixedFrameRate={{ .Values.engineConfig.fixedFrameRate }}.000000
+
+    SmoothedFrameRateRange=(LowerBound=(Type=Inclusive,Value=30.000000),UpperBound=(Type=Exclusive,Value=120.000000))
+
+    MinDesiredFrameRate=60.000000
+
+    NetClientTicksPerSecond=120
+
+    [/script/engine.garbagecollectionsettings]
+    
+    TimeBetweenPurgingPendingKillObjects=45

@@ -19,9 +19,10 @@ copyConfigurationFiles() {
     if [ -f "${gameUserSettingsTempPath}" ]; then
         echo "Copying temporary game user settings file to: ${gameUserSettingsFilePath}"
         cp "${gameUserSettingsTempPath}" "${gameUserSettingsFilePath}"
+    fi
     if [ -f "${engineSettingsTempPath}" ]; then
-    echo "Copying temporary engine settings file to: ${engineSettingsFilePath}"
-    cp "${engineSettingsTempPath}" "${engineSettingsFilePath}"
+        echo "Copying temporary engine settings file to: ${engineSettingsFilePath}"
+        cp "${engineSettingsTempPath}" "${engineSettingsFilePath}"
     fi
 }
 

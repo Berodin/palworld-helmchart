@@ -41,39 +41,34 @@ spec:
           - name: serverdir
             mountPath: /palworld
           - name: config
-            mountPath: /tmp/PalWorldSettings.ini
-            subPath: PalWorldSettings.ini
-          - name: config 
-            mountPath: /tmp/Engine.ini
-            subPath: Engine.ini
-          {{- if .Values.gameUserSettings.DedicatedServerName }}
-          - name: config
-            mountPath: /tmp/GameUserSettings.ini
-            subPath: GameUserSettings.ini
-          {{- end }}
-        envFrom:
-          - configMapRef:
-              name: {{ include "palworld.fullname" . }}
+            mountPath: /palworld/Pal/Saved/Config/LinuxServer
+            readOnly: true
         env:
+          - name: PLAYERS
+            value: "{{ .Values.env.PLAYERS }}"
+          - name: MULTITHREADING
+            value: "{{ .Values.env.MULTITHREADING }}"
+          - name: COMMUNITY
+            value: "{{ .Values.env.COMMUNITY }}"
+          - name: UPDATE_ON_BOOT
+            value: "{{ .Values.env.UPDATE_ON_BOOT }}"
           - name: ADMIN_PASSWORD
             valueFrom:
               secretKeyRef:
                 name: {{ include "palworld.fullname" . }}
-                key: ADMIN_PASSWORD
+                key: AdminPassword
           - name: SERVER_PASSWORD
             valueFrom:
               secretKeyRef:
                 name: {{ include "palworld.fullname" . }}
-                key: SERVER_PASSWORD
+                key: ServerPassword
           - name: PUBLIC_IP
             valueFrom:
               secretKeyRef:
                 name: {{ include "palworld.fullname" . }}
-                key: PUBLIC_IP
-          - name: CONFIG_HASH
-            value: {{ include "palworld.settingsHash" . | quote }}
-          - name: SECRETS_HASH
-            value: {{ include "palworld.secretsHash" . | quote }}
+                key: PublicIP
+          - name: ARM_DEVICE
+            value: "{{ .Values.env.ARM_DEVICE }}"
       volumes:
         - name: serverdir
           persistentVolumeClaim:
@@ -81,12 +76,3 @@ spec:
         - name: config
           configMap:
             name: {{ include "palworld.fullname" . }}
-            items:
-              - key: PalWorldSettings.ini
-                path: PalWorldSettings.ini
-              - key: Engine.ini
-                path: Engine.ini
-              {{- if .Values.gameUserSettings.DedicatedServerName }}
-              - key: GameUserSettings.ini
-                path: GameUserSettings.ini
-              {{- end }}

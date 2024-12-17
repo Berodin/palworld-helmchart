@@ -61,9 +61,9 @@ palWorldSettings:
 
 # Secrets for secure information
 secrets:
-  AdminPassword: "D0n01tRyTh4t"
-  ServerPassword: ""
-  PublicIP: ""
+  ADMIN_PASSWORD: "D0n01tRyTh4t"
+  SERVER_PASSWORD: ""
+  PUBLIC_IP: ""
 
 
 # Engine.ini content

@@ -56,12 +56,12 @@ spec:
             valueFrom:
               secretKeyRef:
                 name: {{ include "palworld.fullname" . }}
-                key: AdminPassword
+                key: ADMIN_PASSWORD
           - name: SERVER_PASSWORD
             valueFrom:
               secretKeyRef:
                 name: {{ include "palworld.fullname" . }}
-                key: ServerPassword
+                key: SERVER_PASSWORD
           - name: PUBLIC_IP
             valueFrom:
               secretKeyRef:

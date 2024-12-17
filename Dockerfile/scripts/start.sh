@@ -1,32 +1,42 @@
 #!/bin/bash
 
-# Initialize the base server start command
+# Base server start command
 serverStartCommand="./PalServer.sh"
 configDirectory="/palworld/Pal/Saved/Config/LinuxServer"
-serverSettingsTempPath="/tmp/PalWorldSettings.ini" # Temporary path for server settings
-gameUserSettingsTempPath="/tmp/GameUserSettings.ini" # Temporary path for game user settings
-serverSettingsFilePath="${configDirectory}/PalWorldSettings.ini" # Server settings file path
-gameUserSettingsFilePath="${configDirectory}/GameUserSettings.ini" # Game user settings file path. This file holds DedicatedServerName which is the name of the savefolder
-engineSettingsTempPath="/tmp/Engine.ini"
-engineSettingsFilePath="${configDirectory}/Engine.ini" 
+ADMIN_PASSWORD=${ADMIN_PASSWORD}
+SERVER_PASSWORD=${SERVER_PASSWORD}
+PUBLIC_IP=${PUBLIC_IP}
 
-# Copies the server settings and game user settings files to the server's configuration directory
-copyConfigurationFiles() {
-    echo "Creating configuration directory: ${configDirectory}"
+# Prepare an arm64-compatible server script
+prepareArm64Server() {
+    echo "Preparing arm64 version of the server script..."
+    cp /palworld/PalServer.sh /palworld/PalServer-arm64.sh
+    sed -i "s|\(\"\$UE_PROJECT_ROOT\/Pal\/Binaries\/Linux\/PalServer-Linux-Shipping\" Pal \"\$@\"\)|LD_LIBRARY_PATH=/home/steam/steamcmd/linux64:\$LD_LIBRARY_PATH /usr/local/bin/box64 \1|" /palworld/PalServer-arm64.sh
+    chmod +x /palworld/PalServer-arm64.sh
+    serverStartCommand="/palworld/PalServer-arm64.sh"
+}
+
+copyConfigFiles() {
+    echo "Debugging before copying configuration files..."
     mkdir -p "${configDirectory}"
-    echo "Copying temporary server settings file to: ${serverSettingsFilePath}"
-    cp "${serverSettingsTempPath}" "${serverSettingsFilePath}"
-    if [ -f "${gameUserSettingsTempPath}" ]; then
-        echo "Copying temporary game user settings file to: ${gameUserSettingsFilePath}"
-        cp "${gameUserSettingsTempPath}" "${gameUserSettingsFilePath}"
+    echo "Config Directory: ${configDirectory}"
+
+    if [ -f "/configs/PalWorldSettings.ini" ]; then
+        echo "Copying /configs/PalWorldSettings.ini to ${configDirectory}"
+        cp /configs/PalWorldSettings.ini "${configDirectory}/PalWorldSettings.ini"
+    else
+        echo "Error: /configs/PalWorldSettings.ini not found!"
     fi
-    if [ -f "${engineSettingsTempPath}" ]; then
-        echo "Copying temporary engine settings file to: ${engineSettingsFilePath}"
-        cp "${engineSettingsTempPath}" "${engineSettingsFilePath}"
+
+    if [ -f "/configs/Engine.ini" ]; then
+        echo "Copying /configs/Engine.ini to ${configDirectory}"
+        cp /configs/Engine.ini "${configDirectory}/Engine.ini"
+    else
+        echo "Error: /configs/Engine.ini not found!"
     fi
 }
 
-# Adjusts the server start command based on environment variables
+# Adjust the server start command based on environment variables
 adjustServerStartCommand() {
     [ -n "${PLAYERS}" ] && serverStartCommand="${serverStartCommand} -players=${PLAYERS}"
     [ "${COMMUNITY}" = true ] && serverStartCommand="${serverStartCommand} EpicApp=PalServer"
@@ -35,32 +45,28 @@ adjustServerStartCommand() {
     fi
 }
 
-# Updates the server and game user configuration files with environment variables
-updateConfigurationFiles() {
-    echo "Assigning ownership of configuration files to 'steam' user"
-    chown steam:steam "${serverSettingsFilePath}"
-    chown steam:steam "${gameUserSettingsFilePath}"
-    chown steam:steam "${engineSettingsFilePath}"
+updateOptionSettings() {
+    local configFile="${configDirectory}/PalWorldSettings.ini"
+    local newOptions="AdminPassword=${ADMIN_PASSWORD},ServerPassword=${SERVER_PASSWORD},PublicIP=${PUBLIC_IP}"
 
-    # Replace placeholders in server settings file with actual environment variable values
-    echo "Updating server settings with environment variables"
-    sed -i "s/ADMIN_PASSWORD/$ADMIN_PASSWORD/g" "${serverSettingsFilePath}"
-    sed -i "s/SERVER_PASSWORD/$SERVER_PASSWORD/g" "${serverSettingsFilePath}"
-    sed -i "s/PUBLIC_IP/$PUBLIC_IP/g" "${serverSettingsFilePath}"
+    echo "Updating OptionSettings in ${configFile}..."
 
-    # Additional updates for gameUserSettingsFilePath can be added here if needed
-
-    # set Configfiles to readonly. This prevents the server to overwrite the pre-existing ones which default files and forces server to use existing ones.
-    echo "Setting configuration files to read-only mode."
-    chmod 444 "${serverSettingsFilePath}"
-    chmod 444 "${gameUserSettingsFilePath}"
-    chmod 444 "${engineSettingsFilePath}"
+    sed -i -E "/^\s*OptionSettings=\(.*\)/{
+        s/^\s*OptionSettings=\((.*)\)/OptionSettings=(\1,${newOptions})/
+        s/,,/,/g  # Doppelte Kommas entfernen
+        s/\(,/\(/  # Komma nach öffnender Klammer entfernen
+        s/,\)/)/   # Komma vor schließender Klammer entfernen
+    }" "$configFile"
 }
 
 # Main script execution
-copyConfigurationFiles
+prepareArm64Server
+copyConfigFiles
 adjustServerStartCommand
-updateConfigurationFiles
+updateOptionSettings
+
+chmod 444 "${configDirectory}/PalWorldSettings.ini"
+chmod 444 "${configDirectory}/Engine.ini"
 
 # Navigate to the game directory
 cd /palworld
@@ -72,4 +78,4 @@ echo "Final server start command: ${serverStartCommand}"
 printf "\e[0;32m***** STARTING SERVER *****\e[0m\n"
 
 # Execute the server start command under the 'steam' user
-FEXBash "${serverStartCommand}"
+${serverStartCommand}

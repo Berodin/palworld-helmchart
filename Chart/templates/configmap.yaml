@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: { ? { include "palworld.fullname" . } }
+  name: {{ include "palworld.fullname" . } }
 data:
   COMMUNITY: "{{ .Values.env.COMMUNITY }}"
   UPDATE_ON_BOOT: "{{ .Values.env.UPDATE_ON_BOOT }}"

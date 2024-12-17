@@ -1,9 +1,11 @@
 # Basic application settings
 replicaCount: 1
+
 image:
   repository: your-docker-image-repo/palworld
   tag: "latest"
   pullPolicy: IfNotPresent
+
 
 # Security context for running the containers
 securityContext:
@@ -11,11 +13,13 @@ securityContext:
   runAsGroup: 1001
   fsGroup: 1001
 
+
 # Resource requests and limits
 resources:
   requests:
     cpu: 500m
     memory: 1024Mi
+
 
 # Environment variables for application configuration
 env:
@@ -25,6 +29,8 @@ env:
   UPDATE_ON_BOOT: "true"
   PORT: 27015
   ARM_DEVICE: "rpi4-pre3"
+  PUBLIC_PORT: 8211
+
 
 # Configuration for persistent storage
 persistence:
@@ -33,6 +39,7 @@ persistence:
     existingClaim: ""
     storageClass: "default"
     size: "10Gi"
+
 
 # Service configuration (ports)
 service:
@@ -44,17 +51,20 @@ service:
       tcp: 8211
       udp: 8211
 
+
 # PalWorldSettings.ini content
 palWorldSettings:
   content: |
     [/Script/Pal.PalGameWorldSettings]
     OptionSettings=(Difficulty=1,DayTimeSpeedRate=1.0,NightTimeSpeedRate=1.0,ExpRate=1.0,PalCaptureRate=1.0,PalSpawnNumRate=1.0,CollectionDropRate=1.0,CollectionObjectHpRate=1.0,CollectionObjectRespawnSpeedRate=1.0,EnemyDropItemRate=1.0,WorkSpeedRate=1.0,PlayerDamageRateAttack=1.0,PlayerDamageRateDefense=1.0,PlayerStomachDecreaceRate=1.0,PlayerStaminaDecreaceRate=1.0,PlayerAutoHPRegeneRate=1.0,PlayerAutoHpRegeneRateInSleep=1.0,PalDamageRateAttack=1.0,PalDamageRateDefense=1.0,PalStomachDecreaceRate=1.0,PalStaminaDecreaceRate=1.0,PalAutoHPRegeneRate=1.0,PalAutoHpRegeneRateInSleep=1.0,BuildObjectDamageRate=1.0,BuildObjectDeteriorationDamageRate=1.0,DeathPenalty=All,bEnablePlayerToPlayerDamage=False,bEnableFriendlyFire=False,bEnableInvaderEnemy=True,bActiveUNKO=False,bEnableAimAssistPad=True,bEnableAimAssistKeyboard=False,bIsMultiplay=False,bIsPvP=False,bCanPickupOtherGuildDeathPenaltyDrop=False,bEnableNonLoginPenalty=True,bEnableFastTravel=True,bIsStartLocationSelectByMap=True,bExistPlayerAfterLogout=False,bEnableDefenseOtherGuildPlayer=False,DropItemMaxNum=3000,DropItemMaxNum_UNKO=100,BaseCampMaxNum=128,BaseCampWorkerMaxNum=15,DropItemAliveMaxHours=1.0,bAutoResetGuildNoOnlinePlayers=False,AutoResetGuildTimeNoOnlinePlayers=72.0,GuildPlayerMaxNum=20,PalEggDefaultHatchingTime=72.0,ServerName=MyPaltopia,ServerDescription=,PublicPort=8211,RCONEnabled=False,RCONPort=25575,Region=,bUseAuth=True,BanListURL=https://api.palworldgame.com/api/banlist.txt)
 
+
 # Secrets for secure information
 secrets:
   AdminPassword: "D0n01tRyTh4t"
   ServerPassword: ""
   PublicIP: ""
+
 
 # Engine.ini content
 engineConfig:

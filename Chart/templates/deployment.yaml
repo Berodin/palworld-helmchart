@@ -41,9 +41,11 @@ spec:
           - name: serverdir
             mountPath: /palworld
           - name: config
-            mountPath: /palworld/Pal/Saved/Config/LinuxServer
+            mountPath: /configs
             readOnly: true
         env:
+          - name: HOME
+            value: "/home/steam"
           - name: PLAYERS
             value: "{{ .Values.env.PLAYERS }}"
           - name: MULTITHREADING

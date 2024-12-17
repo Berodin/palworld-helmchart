@@ -4,7 +4,7 @@ This documentation provides a guide on deploying and managing a Palworld dedicat
 
 ## Overview
 
-This Docker container for the Palworld dedicated server is only compatible with arm64 and uses [FEX](https://github.com/FEX-Emu/FEX). The configuration involves Kubernetes YAML files and environment variables to customize the server setup.
+This Docker container for the Palworld dedicated server uses [BOX](https://github.com/ptitSeb/box64). The configuration involves Kubernetes YAML files and environment variables to customize the server setup.
 
 ### Kubernetes Deployment
 
@@ -41,15 +41,6 @@ The Kubernetes deployment is managed through various YAML files, each serving a 
 | `COMMUNITY`       | Community server visibility                  | `"false"`     |
 | `UPDATE_ON_BOOT`  | Update server on boot                        | `"true"`      |
 | `PORT`            | Port for server communication                | `27015`       |
-
-
-### Server Save Settings (`gameUserSettings`)
-
-the `gameUserSettings` section provides one important value named DedicatedServerName. The gameUserSettings.ini file uses DedicatedServerName to create a new server with savefiles. By giving an existing savefolder and making that file readonly afterwards, the server uses existing save.
-
-| Variable          | Description                                  | Default Value |
-|-------------------|----------------------------------------------|---------------|
-| `DedicatedServerName`         | Savefolder name in /palworld/Pal/Saved/SaveGames/0. You can name an existing folder to use existings saves, or leave it empty so a new server will get created | `yourServername` |
 
 ### Game Settings (`palWorldSettings`)
 

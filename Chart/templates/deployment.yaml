@@ -66,7 +66,7 @@ spec:
             valueFrom:
               secretKeyRef:
                 name: {{ include "palworld.fullname" . }}
-                key: PublicIP
+                key: PUBLIC_IP
           - name: ARM_DEVICE
             value: "{{ .Values.env.ARM_DEVICE }}"
       volumes:
